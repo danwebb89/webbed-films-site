@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Suite — Webbed Films</title>
+  <meta name="description" content="The Suite — Daniel Webb's purpose-built edit room. Dark room, 5.1 surround, colour-accurate displays, and a storage server that never sleeps.">
+  <meta property="og:title" content="The Suite — Webbed Films">
+  <meta property="og:description" content="Daniel Webb's purpose-built edit suite for film and video post-production.">
+  <meta property="og:image" content="https://www.webbedfilms.com/assets/images/logo.png">
+  <meta property="og:url" content="https://www.webbedfilms.com/the-suite.html">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Rock Salt loaded via style.css -->
+  <style>
+
+    html { background: #000; }
+
+    /* ── Background ── */
+    .suite-bg-video {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+    .suite-bg-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.78);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       SECTION 1 — HERO (compact)
+    ══════════════════════════════════════════ */
+    .suite-hero {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: calc(var(--header-h, 70px) + 60px) 40px 20px;
+      overflow: hidden;
+    }
+
+    @keyframes suite-fade-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .suite-hero-inner {
+      text-align: center;
+    }
+
+
+    .suite-quote {
+      font-family: var(--font-display);
+      font-size: 56px;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--text);
+      letter-spacing: 0.02em;
+      margin: 0;
+      line-height: 1.3;
+      max-width: 700px;
+      opacity: 0;
+      animation: suite-fade-up 0.9s ease forwards 0.4s;
+    }
+
+    /* ══════════════════════════════════════════
+       SECTION 2 — CONTACT SHEET PHOTO GALLERY
+    ══════════════════════════════════════════ */
+    .suite-contact-sheet {
+      position: relative;
+      width: 100%;
+      min-height: 1480px;
+      overflow: hidden;
+    }
+
+    .contact-frame {
+      position: absolute;
+      background: #1a1a1a;
+      border: 6px solid #f0ede8;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.8);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.35s ease, box-shadow 0.35s ease, z-index 0s;
+    }
+    .contact-frame:hover {
+      transform: rotate(0deg) scale(1.32) translateY(-20px) !important;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.97), 0 0 0 2px rgba(200,169,110,0.22);
+      z-index: 20;
+      position: absolute;
+    }
+
+    .contact-frame span {
+      font-family: var(--font-ui);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      color: rgba(240,237,232,0.2);
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    /* Frame positions set by JS on each page load */
+
+    /* ══════════════════════════════════════════
+       LIGHTBOX
+    ══════════════════════════════════════════ */
+    .suite-lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.93);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .suite-lightbox.is-open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .lb-close {
+      position: fixed;
+      top: 28px;
+      right: 36px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 8px;
+      transition: color 0.2s ease;
+      z-index: 10000;
+    }
+    .lb-close:hover { color: #fff; }
+
+    .lb-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .lb-photo {
+      width: 80vw;
+      max-width: 960px;
+      aspect-ratio: 3 / 2;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-ui);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--color-muted);
+      text-transform: uppercase;
+      overflow: hidden;
+    }
+    .lb-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .lb-counter {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      color: var(--color-muted);
+    }
+
+    .lb-prev, .lb-next {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.35);
+      font-size: 32px;
+      cursor: pointer;
+      padding: 20px 16px;
+      transition: color 0.2s ease;
+      z-index: 10000;
+      line-height: 1;
+    }
+    .lb-prev:hover, .lb-next:hover { color: #fff; }
+    .lb-prev { left: 16px; }
+    .lb-next { right: 16px; }
+
+    /* ══════════════════════════════════════════
+       SECTION 3 — THE SETUP
+    ══════════════════════════════════════════ */
+    .suite-setup-section {
+      width: 100%;
+      padding: 100px 60px 80px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .suite-setup-label {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.35em;
+      color: var(--color-gold);
+      text-transform: uppercase;
+      margin-bottom: 60px;
+      text-align: center;
+    }
+
+    .spec-list {
+      max-width: 960px;
+      margin: 0 auto;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .spec-row {
+      position: relative;
+      overflow: visible;
+      display: flex;
+      align-items: baseline;
+      gap: 48px;
+      padding: 22px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.25s ease;
+    }
+
+    .spec-row:hover {
+      background: rgba(200,169,110,0.025);
+      padding-left: 12px;
+      padding-right: 12px;
+      margin: 0 -12px;
+    }
+
+    .spec-label {
+      flex: 0 0 160px;
+      font-family: var(--font-ui);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      color: var(--color-gold);
+      text-transform: uppercase;
+      padding-top: 3px;
+    }
+
+    .spec-value {
+      flex: 1;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 19px;
+      color: rgba(240,237,232,0.9);
+      line-height: 1.4;
+    }
+
+    /* ── Chalk-on-hover ── */
+    .chalk-hover-svg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .chalk-hover-svg path {
+      stroke: rgba(255, 255, 255, 0.72);
+      stroke-width: 1.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .chalk-hover-text {
+      position: absolute;
+      font-family: var(--font-chalk);
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.92);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      line-height: 1.3;
+      transition: opacity 0.15s ease;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.95), 0 0 18px rgba(0,0,0,0.85);
+      -webkit-text-stroke: 0.4px rgba(0,0,0,0.5);
+    }
+
+    @media (max-width: 700px) {
+      .spec-row { flex-direction: column; gap: 6px; }
+      .spec-label { flex: none; }
+      .spec-value { font-size: 17px; }
+    }
+
+    /* ── Entrance animations ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* Stagger contact frames */
+    .contact-frame.reveal { transition-delay: calc(var(--reveal-i, 0) * 0.08s); }
+
+    /* ── Keyboard hint ── */
+    .lb-hint {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-ui);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      z-index: 10000;
+      opacity: 1;
+      transition: opacity 0.8s ease;
+      pointer-events: none;
+    }
+    .lb-hint.fade-out { opacity: 0; }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .suite-hero { padding: calc(var(--header-h, 70px) + 40px) 20px 10px; }
+      .suite-quote { font-size: 26px; }
+      .suite-contact-sheet { min-height: auto; padding: 40px 20px; }
+      .contact-frame {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        width: 100% !important;
+        height: 200px !important;
+        transform: none !important;
+        margin-bottom: 12px;
+      }
+      .suite-setup-section { padding: 60px 20px; }
+      .lb-photo { width: 94vw; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <video class="suite-bg-video" autoplay muted loop playsinline>
+    <source src="assets/video/noise background.mp4" type="video/mp4">
+  </video>
+  <div class="suite-bg-overlay"></div>
+
+  <header id="site-header">
+    <a href="index.html" class="logo-link">
+      <img src="assets/images/logo.png" alt="Webbed Films" class="logo" onerror="this.style.display='none'">
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="the-suite.html">The Suite</a></li>
+        <li class="has-dropdown">
+          <a href="work.html">Work</a>
+          <ul class="dropdown">
+            <li><a href="documentary.html">Documentary</a></li>
+            <li><a href="corporate.html">Corporate</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="shorts.html">Shorts</a></li>
+          </ul>
+        </li>
+        <li class="has-dropdown">
+          <a href="webbed-films.html">Originals</a>
+          <ul class="dropdown">
+            <li><a href="webbed-films/rosemary.html">The Rite of Rosemary</a></li>
+            <li><a href="webbed-films/ngs.html">NGS</a></li>
+            <li><a href="webbed-films/blackout.html">Blackout</a></li>
+            <li><a href="webbed-films/christmas-claret.html">A Christmas Claret</a></li>
+          </ul>
+        </li>
+        <li><a href="https://www.revelstokefilms.com" target="_blank" rel="noopener noreferrer">Revelstoke</a></li>
+        <li><a href="https://watch.webbedfilms.com" target="_blank" rel="noopener noreferrer">Watch</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <div class="mobile-nav" id="mobile-nav" role="dialog" aria-label="Navigation menu">
+    <button class="mobile-nav-close" id="mobile-nav-close" aria-label="Close menu">&#x2715;</button>
+    <ul>
+      <li><a href="about.html">About</a></li>
+      <li><a href="the-suite.html">The Suite</a></li>
+      <li><a href="work.html">Work</a></li>
+      <li><a href="documentary.html">Documentary</a></li>
+      <li><a href="corporate.html">Corporate</a></li>
+      <li><a href="features.html">Features</a></li>
+      <li><a href="shorts.html">Shorts</a></li>
+      <li><span class="mobile-nav-section">Originals</span></li>
+      <li><a href="webbed-films/rosemary.html">The Rite of Rosemary</a></li>
+      <li><a href="webbed-films/ngs.html">NGS</a></li>
+      <li><a href="webbed-films/blackout.html">Blackout</a></li>
+      <li><a href="webbed-films/christmas-claret.html">A Christmas Claret</a></li>
+      <li><a href="https://www.revelstokefilms.com" target="_blank" rel="noopener noreferrer">Revelstoke</a></li>
+        <li><a href="https://watch.webbedfilms.com" target="_blank" rel="noopener noreferrer">Watch</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+
+  <main>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 1 — HERO
+    ═══════════════════════════════════════ -->
+    <section class="suite-hero">
+      <div class="suite-hero-inner">
+        <p class="suite-quote" id="suite-quote"></p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 2 — CONTACT SHEET PHOTO GALLERY
+    ═══════════════════════════════════════ -->
+    <section class="suite-contact-sheet" aria-label="Suite photos">
+
+      <div class="contact-frame" data-index="0" tabindex="0" role="button" aria-label="Open suite photo 1">
+        <img src="assets/images/suite/IMG_4900.jpeg" style="width:100%;height:100%;object-fit:cover;" alt="The edit suite" loading="lazy">
+      </div>
+
+      <div class="contact-frame" data-index="1" tabindex="0" role="button" aria-label="Open suite photo 2">
+        <img src="assets/images/suite/IMG_4907.jpeg" style="width:100%;height:100%;object-fit:cover;" alt="The edit suite" loading="lazy">
+      </div>
+
+      <div class="contact-frame" data-index="2" tabindex="0" role="button" aria-label="Open suite photo 3">
+        <img src="assets/images/suite/IMG_3352.jpeg" style="width:100%;height:100%;object-fit:cover;" alt="The edit suite" loading="lazy">
+      </div>
+
+      <div class="contact-frame" data-index="3" tabindex="0" role="button" aria-label="Open suite photo 4">
+        <img src="assets/images/suite/IMG_3353.jpeg" style="width:100%;height:100%;object-fit:cover;" alt="The edit suite" loading="lazy">
+      </div>
+
+      <div class="contact-frame" data-index="4" tabindex="0" role="button" aria-label="Open suite photo 5">
+        <img src="assets/images/suite/IMG_3354.jpeg" style="width:100%;height:100%;object-fit:cover;" alt="The edit suite" loading="lazy">
+      </div>
+
+      <div class="contact-frame" data-index="5" tabindex="0" role="button" aria-label="Open suite photo 6">
+        <img src="assets/images/suite/IMG_3355.jpeg" style="width:100%;height:100%;object-fit:cover;" alt="The edit suite" loading="lazy">
+      </div>
+
+      <div class="contact-frame" data-index="6" tabindex="0" role="button" aria-label="Open suite photo 7">
+        <img src="assets/images/suite/IMG_3356.jpeg" style="width:100%;height:100%;object-fit:cover;" alt="The edit suite" loading="lazy">
+      </div>
+
+      <div class="contact-frame" data-index="7" tabindex="0" role="button" aria-label="Open suite photo 8">
+        <img src="assets/images/suite/IMG_3357.jpeg" style="width:100%;height:100%;object-fit:cover;" alt="The edit suite" loading="lazy">
+      </div>
+
+      <div class="contact-frame" data-index="8" tabindex="0" role="button" aria-label="Open suite photo 9">
+        <img src="assets/images/suite/IMG_3358.jpeg" style="width:100%;height:100%;object-fit:cover;" alt="The edit suite" loading="lazy">
+      </div>
+
+      <div class="contact-frame" data-index="9" tabindex="0" role="button" aria-label="Open suite photo 10">
+        <img src="assets/images/suite/IMG_3359.jpeg" style="width:100%;height:100%;object-fit:cover;" alt="The edit suite" loading="lazy">
+      </div>
+
+      <div class="contact-frame" data-index="10" tabindex="0" role="button" aria-label="Open suite photo 11">
+        <img src="assets/images/suite/IMG_3361.jpeg" style="width:100%;height:100%;object-fit:cover;" alt="The edit suite" loading="lazy">
+      </div>
+
+      <div class="contact-frame" data-index="11" tabindex="0" role="button" aria-label="Open suite photo 12">
+        <img src="assets/images/suite/IMG_3363.jpeg" style="width:100%;height:100%;object-fit:cover;" alt="The edit suite" loading="lazy">
+      </div>
+
+      <div class="contact-frame" data-index="12" tabindex="0" role="button" aria-label="Open suite photo 13">
+        <img src="assets/images/suite/IMG_3365.jpeg" style="width:100%;height:100%;object-fit:cover;" alt="The edit suite" loading="lazy">
+      </div>
+
+      <div class="contact-frame" data-index="13" tabindex="0" role="button" aria-label="Open suite photo 14">
+        <img src="assets/images/suite/IMG_3366.jpeg" style="width:100%;height:100%;object-fit:cover;" alt="The edit suite" loading="lazy">
+      </div>
+
+      <div class="contact-frame" data-index="14" tabindex="0" role="button" aria-label="Open suite photo 15">
+        <img src="assets/images/suite/IMG_3368.jpeg" style="width:100%;height:100%;object-fit:cover;" alt="The edit suite" loading="lazy">
+      </div>
+
+    </section>
+
+    <!-- LIGHTBOX -->
+    <div class="suite-lightbox" id="suite-lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+      <button class="lb-close" id="lb-close" aria-label="Close lightbox">&#x2715;</button>
+      <button class="lb-prev" id="lb-prev" aria-label="Previous photo">&#x2039;</button>
+      <button class="lb-next" id="lb-next" aria-label="Next photo">&#x203a;</button>
+      <div class="lb-inner">
+        <div class="lb-photo" id="lb-photo">SUITE PHOTO 1</div>
+        <p class="lb-counter" id="lb-counter">1 / 15</p>
+      </div>
+      <p class="lb-hint" id="lb-hint">Use arrow keys to navigate</p>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 3 — THE SETUP
+    ═══════════════════════════════════════ -->
+    <section class="suite-setup-section">
+      <p class="suite-setup-label">THE SETUP</p>
+<div class="spec-list" id="spec-list"></div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-bottom">
+      <span class="footer-copy">&copy; 2026 Webbed Films</span>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/webbedfilms/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+        </a>
+        <a href="https://www.threads.net/@webbedfilms" target="_blank" rel="noopener noreferrer" aria-label="Threads">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.848 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.583-1.31-.879-2.367-.883h-.049c-.846 0-1.994.233-2.721 1.32L7.734 9.258c.598-.863 1.37-1.496 2.299-1.882.977-.405 2.07-.592 3.198-.555 1.865.067 3.305.676 4.28 1.81 1.166 1.35 1.606 3.274 1.255 5.64.024.018.049.035.073.053.57.417 1.073.964 1.466 1.618 1.083 1.798 1.019 4.384-.744 6.107-1.978 1.936-4.29 2.772-7.375 2.951z"/>
+          </svg>
+        </a>
+        <a href="https://x.com/webbedfilms_uk" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/nav.js"></script>
+  <script src="js/flourishes.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    /* ── Daily rotating quote ── */
+    var quotes = [
+      "Where the work happens.",
+      "No film posters on the wall. Just the ones worth stealing.",
+      "Five point one. Because headphones are for commuters.",
+      "The kind of room where you forget to eat lunch.",
+      "Built for the bit where the rough cut becomes something.",
+      "Somewhere between a cinema and a bunker.",
+      "More hard drives than furniture.",
+      "The colour grade is better when the room is this dark.",
+      "Where Lord of the Rings has been watched more times than is healthy.",
+      "Games, films, music, work. Not always in that order.",
+      "The kind of room that took years to get exactly wrong, then right.",
+      "The speakers cost more than the sofa. Worth it.",
+      "Yes, the subwoofer is necessary. No, the neighbours don't agree.",
+      "If the timeline's not rendering, the kettle is.",
+      "Three monitors. Still not enough screen.",
+      "Where 'just one more tweak' became a lifestyle.",
+      "The chair's been replaced twice. The obsession hasn't.",
+      "No natural light. That's a feature, not a flaw.",
+      "Where rough cuts go in and goosebumps come out.",
+      "If the walls could talk, they'd ask for a colour grade.",
+      "Every cable has a purpose. I just can't remember which.",
+      "Dark room, bright ideas. Or the other way around.",
+      "Built for all-nighters. Survived a few.",
+      "The fridge is three steps away. The deadline is closer.",
+      "Where 'final_v2_FINAL_actuallyFinal.mp4' was born.",
+      "Treated room. Untreated ambition.",
+      "The neighbours think I'm a DJ. I'm not correcting them.",
+      "It's not hoarding if it's all backed up.",
+      "The edit suite that thinks it's a cinema.",
+      "Where the magic happens. And by magic, I mean rendering.",
+      "More subscriptions than a dentist's waiting room.",
+      "Two terabytes of footage. One story.",
+      "Where every pixel is personal.",
+      "The room smells like coffee and deadlines.",
+      "I didn't choose the edit life. Actually, yeah I did.",
+      "If you listen carefully, you can hear the NVMe screaming.",
+      "The kind of room where 2am feels like 10pm.",
+      "Where sound design is taken far too seriously.",
+      "Yes, I can hear the difference. No, you probably can't.",
+      "Home office is a strong word. This is a cockpit.",
+      "Built by someone who watched too many behind-the-scenes docs.",
+      "Calibrated display. Uncalibrated sleep schedule.",
+      "The only room in the house with acoustic treatment and zero regrets.",
+      "Where the real Director's Cut happens.",
+      "Render, wait, tea, repeat.",
+      "Not a man cave. A post-production facility that happens to have snacks.",
+      "If Avid crashes one more time, I'm switching to crayons.",
+      "The bass response is flat. My bank account, also flat.",
+      "Twenty years of editing. Still Googling keyboard shortcuts.",
+      "Where exports go to take their sweet time.",
+      "You haven't lived until you've colour graded at 3am in complete darkness.",
+      "The room where 'I'll fix it in post' actually gets fixed.",
+      "One room. Every hat. Director, editor, colourist, tea-maker.",
+      "Proof that you don't need a studio. Just stubbornness.",
+      "The edit bay that could. And does. Mostly.",
+      "Where B-roll becomes the hero.",
+      "More processing power than sense.",
+      "The setup changes. The passion doesn't.",
+      "If these speakers could talk, they'd critique your mix.",
+      "Where the timeline is the only thing that's straight.",
+      "Built one upgrade at a time. Never finished. Never will be."
+    ];
+    var quoteEl = document.getElementById('suite-quote');
+    var quoteIdx = Math.floor(Math.random() * quotes.length);
+    quoteEl.textContent = quotes[quoteIdx];
+
+    /* Auto-rotate quote every 30s with crossfade */
+    setInterval(function () {
+      quoteEl.style.transition = 'opacity 0.6s ease';
+      quoteEl.style.opacity = '0';
+      setTimeout(function () {
+        quoteIdx = (quoteIdx + 1) % quotes.length;
+        quoteEl.textContent = quotes[quoteIdx];
+        quoteEl.style.opacity = '1';
+      }, 600);
+    }, 30000);
+
+    /* Random number helper */
+    function rand(min, max) { return Math.random() * (max - min) + min; }
+
+    /* ── Randomise frame layout on each page load ── */
+    (function () {
+      var allFrames = document.querySelectorAll('.contact-frame');
+      var rows = [
+        { tMin:  10, tMax:  70, slots: [[ 1,5],  [22,28], [45,53], [69,76]] },
+        { tMin: 390, tMax: 450, slots: [[ 0,4],  [22,28], [49,56], [70,76]] },
+        { tMin: 740, tMax: 800, slots: [[ 1,5],  [24,30], [48,55], [72,77]] },
+        { tMin:1090, tMax:1140, slots: [[ 6,12], [32,40], [60,68]]          }
+      ];
+      var idx = 0;
+      rows.forEach(function (row) {
+        row.slots.forEach(function (slot) {
+          if (idx >= allFrames.length) return;
+          var f   = allFrames[idx++];
+          var w   = Math.round(rand(230, 460));
+          var h   = Math.round(rand(210, 400));
+          var rot = rand(-6.5, 6.5).toFixed(1);
+          var top = Math.round(rand(row.tMin, row.tMax));
+          var lft = rand(slot[0], slot[1]).toFixed(1);
+          f.style.width     = w   + 'px';
+          f.style.height    = h   + 'px';
+          f.style.top       = top + 'px';
+          f.style.left      = lft + '%';
+          f.style.transform = 'rotate(' + rot + 'deg)';
+        });
+      });
+    }());
+
+    /* ── Build spec rows ── */
+    var specs = [
+      ["Edit System",    "Mac Studio M3 Ultra"],
+      ["Edit Displays",  "LG C2 42\u201d OLED \u00d7 2"],
+      ["Viewing Screen", "LG C2 55\u201d OLED"],
+      ["Main Screen",    "LG C9 65\u201d"],
+      ["Edit Audio",     "Adam Audio T5V via Scarlett Solo"],
+      ["Surround",       "Denon AVR \u00b7 5.1 + Subwoofer"],
+      ["Headphones",     "Sony MDR-7506 \u00b7 Apple AirPods Max"],
+      ["Microphone",     "R\u00d8DE USB"],
+      ["Storage",        "TrueNAS 180TB via 10GbE \u00b7 Unraid backup"],
+      ["Client Access",  "Tailscale \u00b7 Cloudflare Tunnel"],
+      ["Connectivity",   "2Gbps Symmetrical Fibre"],
+      ["Video Delivery", "Self-hosted \u2014 no Vimeo, no compromises"],
+      ["Peripherals",    "DaVinci Resolve Speed Editor \u00b7 Keychron Q10 Max \u00b7 MX Master 3 \u00b7 Stream Deck XL"],
+      ["Software",       "DaVinci Resolve Studio \u00b7 Avid Media Composer \u00b7 Adobe Creative Cloud"],
+      ["Also",           "Xbox Series X \u00b7 PS5 Pro \u00b7 Apple TV"]
+    ];
+
+    var chalkLines = [
+      /* 0 — Mac Studio M3 Ultra */
+      ['absolute overkill','my mortgage said no','it does nothing slowly','technically a spaceship',
+       'sent a bill, not an invoice','spins up and the lights dim','could render pixar. cuts ads.',
+       'apple called. they\'re proud.','yes, both chips.','my accountant cried',
+       'unnecessary. perfect.','faster than my decisions','i will never explain this purchase',
+       'm3 ultra. whatever that means.','silent. deadly. expensive.','it knows things.',
+       'renders before i finish the thought','the bin but good','she purrs',
+       'dual die. dual threat.','i needed this for... reasons.','runs cool. unlike me.',
+       'worth every penny. maybe.','no fan noise. just regret.','apple silicon changed me',
+       'my therapist and i discussed it','you should see the electricity bill','i named it.',
+       'the invoice was not a pdf','512gb unified memory because why not'],
+
+      /* 1 — LG C2 42" OLED × 2 */
+      ['× 2. yes, really.','one wasn\'t enough','the second was an accident',
+       'colour accurate and conspicuous','burn-in paranoia: constant','basically a cinema. for one.',
+       'HDR or go home','each costs more than your car','wide gamut. narrow wallet.',
+       'bought the second one immediately','calibrated. every. week.','never watched a film. just grades.',
+       'oled blacks are not optional','the glow in the dark is fine','someone called them televisions. correct.',
+       'two screens. zero desk space.','could have been three honestly','cables behind are a crime scene',
+       'the pixels are individually on fire','84 inches total. not enough.',
+       'my eyes have never been happier','i will never go back to IPS. never.',
+       'the reflection shows my shame','worth it. so worth it.','DCI-P3 100%. sleeping great.',
+       'both slightly tilted. both feel correct.','one for editing. one for... editing.',
+       'no returns.','more pixels than sense','the second monitor justified the desk'],
+
+      /* 2 — LG C2 55" OLED */
+      ['for viewing. obviously.','not for editing. for watching.','the screen clients sit in front of',
+       '55 inches of justification','third screen. zero regrets.','needed a dedicated viewing monitor, right?',
+       'this one\'s for cinematic purposes','the one i actually watch films on',
+       'it\'s a viewing screen. very different.','not as many as it sounds',
+       'okay fine it\'s for gaming sometimes','purely professional. mostly.',
+       '55 inches of legitimacy','the guest screen','for when clients visit. hi clients.',
+       'the one that makes them gasp','reference quality. client quality.',
+       'bigger than i thought. perfect.','the justify-the-room screen','this is why the room is dark',
+       'for accurate playback. for the vibes.','third is not a crowd.','the presentation monitor',
+       'yes there are three. yes, all OLED.','calibrated differently. subtly.',
+       'the ambient one','purely for reference. obviously.','the middle child of screens',
+       'clients don\'t ask about it anymore','i call it the honest screen'],
+
+      /* 3 — LG C9 65" */
+      ['sixty five inches of ambition','technically a television. practically a portal.',
+       'the big lad','it commands the room','this one just... exists.',
+       'it\'s load-bearing at this point','the screen the room was built for',
+       '65. not 55. very important.','C9. old faithful.','the patriarch',
+       'it watches me work','calibrated with fear and love','the one that started it all',
+       'i built the room around this','when you walk in you see this first',
+       'it\'s not a TV. it\'s infrastructure.','looms. beautifully.','this one has seen things.',
+       'grading happens here','watching anything else feels wrong now',
+       '65 inches: the correct amount','the crown jewel. dusty crown, but still.',
+       'it just sits there being massive','i talk to it sometimes',
+       '65 inches of completely reasonable decisions','it deserves its own section',
+       'the C9 will outlive us all','the anchor','i have never measured it. 65 feels right.',
+       'every client notices it first'],
+
+      /* 4 — Adam Audio T5V via Scarlett Solo */
+      ['neighbours love me','sorry next door','the bass is not optional',
+       'flat response. loud response.','studio monitors in a residential building. sorry.',
+       'the solo was the compromise','they knocked once. i turned it up.',
+       'for critical listening. and upsetting people.','i said monitors. i meant weapons.',
+       'nothing sounds quiet through these','the scarlett solo is the peacekeeper',
+       'reference level playback: 8am edition','flat is beautiful','they never wave anymore',
+       'professional audio. personal consequences.','the planning officer visited once.',
+       'i have explained these to four neighbours','freq response is flat. relations are not.',
+       'the bass bin arrives next month','these are small. the sound is not.',
+       'studio grade. residential address. good luck.','solo interface. solo social life.',
+       'i mix at reference level. once.','my ears are fine. the walls aren\'t.',
+       'adam audio: trusted. feared. beloved.','the irony of studio monitors in a home',
+       'turned up to 8 once. never again.','the morning mix: everyone\'s problem',
+       'scarlett solo and two prayers','monitoring has never been this guilt-ridden'],
+
+      /* 5 — Denon AVR · 5.1 + Subwoofer */
+      ['full cinema mode','the neighbours have a name for me now','5.1: the correct number of channels',
+       'the subwoofer lives under the desk','i feel the bass in my teeth',
+       'surround sound in a flat. bold.','the sub hit once and a picture fell',
+       'it shakes the walls on purpose','5 speakers and a prayer',
+       'the neighbours described it as events','the mix checks out at reference level',
+       'one sub. big sub. very big sub.','the floor resonates now',
+       'the bass shelf is structural at this point','i can hear it from outside apparently',
+       'dolby atmos would be next if i had the ceiling','the room was tuned to this',
+       'it moves air. deliberately.','the AVR predates the house rules',
+       'the sub cable runs under the carpet','5.1: non-negotiable',
+       'sub-bass frequencies: structural engineers hate this','the LFE channel has feelings',
+       'ported sub in a small room: brave choice','the denon obeys no one',
+       'it breathes','the sub was called unreasonable by one reviewer. perfect.',
+       'the room has never been louder. or quieter.','this was supposed to be just stereo',
+       'cinema grade. flat grade.'],
+
+      /* 6 — Sony MDR-7506 · Apple AirPods Max */
+      ['both. always.','one pair wasn\'t enough','the 7506 is for work. the max is for feeling.',
+       'closed back AND spatial audio. yes.','the max has an embarrassing carrying case',
+       'one for truth. one for vibes.','the 7506 never lies to you',
+       'the max lies to you beautifully','two headphones. one dependency.',
+       'the cable on the 7506 is stupid long. on purpose.','one for the 3am mix. one for the flight.',
+       'the max sits on the stand looking sorry for itself','both cost too much. different amounts.',
+       'the 7506 is 35 years old and still correct','the max needed a charging adapter. sony didn\'t.',
+       'both on the desk. neither ever returned.','reference quality then luxury quality',
+       'i bought the max for spatial. i use the 7506.','the 7506 will outlive me',
+       'the max: technically a flex. practically amazing.','both are fine. one is honest.',
+       'wireless vs wired: resolved badly','i use the 7506 when i care. the max when i don\'t.',
+       'the cable tangle is not a metaphor','i lost one eartip on the 7506. been fine.',
+       'the max charging case looks like a bra. don\'t @ me.','two headphones. one mixer. many opinions.',
+       'different when everything else is the same','yellow ear pads: professional achievement',
+       'the 7506 and i have an understanding'],
+
+      /* 7 — RØDE USB */
+      ['surprisingly quiet','it hears everything','the room has good acoustics apparently',
+       'USB audio: surprisingly good, actually','broadcast quality from a desk mic',
+       'it picked up the kettle once','zero latency monitoring saved my life',
+       'the gain is set conservatively','better than zoom deserves',
+       'the pop filter is still in its bag','it just works. annoyingly.',
+       'one cable. works perfectly. no drama.','red dot: always watching',
+       'video calls sound different now. people ask.','the cat knocked it over. still fine.',
+       'clients commented on the audio. good sign.','USB was the right call for once',
+       'clean. simple. works.','the one purchase with zero regret',
+       'the arm cost more than the mic','RODE: pronounced road. don\'t argue.',
+       'zero pops. ever.','zero hiss. impressive for a USB mic.',
+       'connected once. never disconnected.','it hears me think',
+       'broadcast quality. budget-adjacent price.','it sits in judgment of every voice call',
+       'the simplest thing in this room','the scissor arm is doing the real work',
+       'it sits there being quietly excellent'],
+
+      /* 8 — TrueNAS 180TB via 10GbE · Unraid backup */
+      ['never fills up','180 terabytes of intention','10 gigabits per second of irrational confidence',
+       'the server closet is a lifestyle choice','i have never worried about storage',
+       'it hums in A flat','180TB and it\'s 60% full. somehow.',
+       'the drives are redundant. unlike me.','NAS means never admitting storage',
+       '10GbE: because gigabit is embarrassing now','i can explain all of it but won\'t',
+       'the rack was the second purchase','dual redundancy for the paranoid professional',
+       'it\'s not hoarding if it\'s organised','the transfer speeds make me emotional',
+       'room for everything i\'ve ever shot and everything i will','it breathes and i feel calm',
+       'the parity drive is the unsung hero','24/7 uptime and not one thank you',
+       'i measured the room for the rack before the desk','it knows where every frame lives',
+       'RAID is not backup. backup is Unraid.','10GbE adapters were £30 each. worth it.',
+       'the cables are labelled. obsessively.','the power draw is a conversation i avoid',
+       'home NAS or small film studio? yes.','the spinning rust sounds like intention',
+       '180TB is enough. i said it.','the noise is white. the data is precious.',
+       'it has never once let me down'],
+
+      /* 9 — Tailscale · Cloudflare Tunnel */
+      ['client approved','access from anywhere. dangerously.','i gave a client a link. they gasped.',
+       'the tunnel is permanent. the client is not.','secure by default. paranoid by choice.',
+       'i SSH from my phone sometimes','no VPN drama. just Tailscale.',
+       'the tunnel never sleeps','remote edit review: solved forever',
+       'cloudflare is load-bearing','the WireGuard handshake is very satisfying',
+       'i share preview links like they\'re nothing','zero port forwarding. zero stress.',
+       'clients think i\'m magic. i let them.','the tailnet has four devices minimum',
+       'no IT department needed or wanted','the network is basically correct now',
+       'tunnelled so deep the router doesn\'t know','secure mesh VPN: for fun and profit',
+       'cloudflare stands between me and chaos','the client link loads instantly. every time.',
+       'exit nodes: for emergencies','i access the suite from the sofa regularly',
+       'zero trust sounds aggressive. it is.','the MagicDNS is genuinely magic',
+       'i explained this to a client. big mistake.','they just ask: is the link ready?',
+       'tailscale: the quiet backbone of everything','one subnet router. infinite reach.',
+       'self-hosted delivery, self-hosted access'],
+
+      /* 10 — 2Gbps Symmetrical Fibre */
+      ['blisteringly fast','2 gigabits. symmetrical. yes both.',
+       'up is as fast as down. life-changing.','the ISP was surprised when i asked',
+       'i upload 4K without thinking','the speed test is my screensaver',
+       '500MB/s sustained. for fun.','faster than the client\'s entire office',
+       '2Gbps: technically enough for now','the router cost more than i expected',
+       'i have never waited for an upload','fibre to the premises, not the cabinet',
+       'the latency is embarrassingly good','i once uploaded 1TB in an afternoon',
+       'the SFP+ port was worth every penny','2Gbps in. 2Gbps out. no compromises.',
+       'the ISP laughed. then they delivered.','i had to upgrade the router twice',
+       'the first gigabit felt slow after a week','full duplex at 2Gbps: a love language',
+       'the upload speed changed my personality','no more still uploading excuses',
+       'the ethernet cable is cat6a. obviously.','i never buffer. ever.',
+       'cloudflare gets the full 2Gbps. jealous?','the ping to the server is 2ms. local.',
+       'symmetrical or nothing','2Gbps because 1 wasn\'t quite right',
+       'bandwidth anxiety: cured.','the neighbours share the building\'s 1Gbps. sad.'],
+
+      /* 11 — Self-hosted — no Vimeo, no compromises */
+      ['on principle','vimeo can wait','my server. my rules.',
+       'no compression artefacts from strangers','cloudflare tunnel delivers it direct',
+       'the client link is mine','no watermarks. no monthly fees.',
+       'vimeo took £200 a year. i took it back.','the delivery is as good as the grade',
+       'self-hosted or i haven\'t tried hard enough','zero third-party touching my work',
+       'the bandwidth covers it. easily.','i own the pipeline end to end',
+       'the stream quality is whatever i upload','no processing spinner. ever.',
+       'PeerTube: not just for idealists','i explained this in a client meeting. 8 minutes.',
+       'no bitrate cap from someone else\'s server','proprietary delivery is for cowards',
+       'i told a client the link was custom. it was.','the server serves. it doesn\'t judge.',
+       'my storage. my bandwidth. my choice.','cheaper than vimeo pro. better than vimeo pro.',
+       'client downloads originals if they want.','it just works. because i made it work.',
+       'the ideology is baked in. also the grade.','the compression is mine to set',
+       'no vimeo review tool? correct, i built one.','integrity as a delivery mechanism',
+       'the invoice doesn\'t include vimeo. never did.'],
+
+      /* 12 — Peripherals */
+      ['too many toys','the speed editor changed editing. actually.',
+       'the keychron clacks and i don\'t care','the stream deck has 32 keys and i use 6',
+       'the mx master 3 fits the hand like a prayer','i bought the speed editor before the licence',
+       'the clacking is rhythmic. it helps.','stream deck: more useful than it looks',
+       'the speed editor is genuinely magic','mechanical keys at 2am: a choice',
+       'i mapped everything to the stream deck. forgot half.','the scroll wheel on the mx master is illegal',
+       '32 buttons of organised anxiety','the DaVinci panel talks to the software. telepathically.',
+       'the keys are custom. obviously.','the ergonomics here are beyond reproach',
+       'stream deck profiles: i have 11','the keyboard sound is part of the workflow now',
+       'i assigned macros to things i haven\'t done yet','the speed editor lives left. the keys right.',
+       'the desk exists to hold these things','i cannot edit without the scroll wheel now',
+       'the stream deck key art took 3 hours to design','i type fast. i edit faster.',
+       'the peripherals cost more than the computer once','all wireless except the ones that aren\'t',
+       'every key has a job. mostly.','the RGB is off. obviously.',
+       'the trackball was tried. abandoned. forgotten.','the keychron is QMK. not that i\'ve used it.'],
+
+      /* 13 — Software */
+      ['all three :(','subscriptions are just rent for software','i own davinci. i rent the others.',
+       'avid: because clients.','premiere: because clients who don\'t use avid',
+       'davinci resolve is the honest one','the perpetual licence was worth it',
+       'adobe\'s pricing is a conversation i avoid','avid is old. avid is essential.',
+       'resolve colour: no competition','one for the grade. one for the cut. one for the client.',
+       'three subscriptions. one bank account.','i open premiere and feel a brief sadness',
+       'resolve is the future. avid is the present.','avid media composer: built different.',
+       'i\'ve been on premiere since CS6. send help.','three different interfaces. three different personalities.',
+       'the licensing manager is everyone\'s enemy','davinci updates more often than i eat lunch',
+       'avid just works. slowly. reliably. forever.','three different logins. very fun.',
+       'adobe sensei does things i didn\'t ask for','i know all three and trust one',
+       'the creative cloud sync fills the cache','avid: loved. expensive. correct.',
+       'all three open at once: brave or chaotic. yes.','fairlight is underrated. wildly.',
+       'the perpetual licence was the moment','resolve colour node tree: therapy.',
+       'premiere is fine. davinci is love.'],
+
+      /* 14 — Also */
+      ['research. obviously.','it\'s all research','the ps5 pro was... research.',
+       'the xbox is for game pass. probably.','apple tv runs silently. like the mac.',
+       'all three were necessary','the controller lives on the desk. work tool.',
+       'ps5 pro: the 4K one','the loading times are now zero. this matters.',
+       'i said research and i meant it','the hdmi routing is immaculate',
+       'game pass: £14 of research per month','the ps5 stands upright. horizontally. unclear.',
+       'the Xbox is on the big screen. of course.','the apple tv does the heavy lifting',
+       'DualSense haptics: useful reference material','all on the same AVR. very tidy.',
+       'game audio through the 5.1: research.','the resolution modes were tested. for science.',
+       'the ps5 pro cost £700. for research.','three consoles because two weren\'t enough research',
+       'the controllers are ergonomic reference devices','xbox quick resume: impressive research',
+       'the loading screen on the PS5 is 3 seconds. noted.','apple tv 4K 60fps: adequate research vehicle',
+       'the suite doubles as a gaming setup. for research.','the ps5 was the pro because: research.',
+       'i have logged many hours of research here','research hours: uncountable. insights: numerous.',
+       'the ps5 pro disc drive was the correct call. for research.']
+    ];
+
+    function rand(a, b) { return Math.random() * (b - a) + a; }
+
+    var specList = document.getElementById('spec-list');
+    specs.forEach(function (s, i) {
+      var row = document.createElement('div');
+      row.className = 'spec-row';
+      row.innerHTML =
+        '<span class="spec-label">' + s[0] + '</span>' +
+        '<span class="spec-value">' + s[1] + '</span>';
+
+      /* Chalk hover elements */
+      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('class', 'chalk-hover-svg');
+
+      var textEl = document.createElement('span');
+      textEl.className = 'chalk-hover-text';
+
+      row.appendChild(svg);
+      row.appendChild(textEl);
+
+      var cancelAnim = null;
+
+      row.addEventListener('mouseenter', function () {
+        if (cancelAnim) { cancelAnim(); cancelAnim = null; }
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+        textEl.style.opacity = '0';
+        var pool = chalkLines[i];
+        textEl.textContent = pool[Math.floor(Math.random() * pool.length)];
+
+        var w   = row.offsetWidth;
+        var h   = row.offsetHeight;
+
+        /* Start: somewhere inside the spec-value text */
+        var sx  = 220 + rand(-10, 30);
+        var sy  = h / 2 + rand(-4, 4);
+
+        /* End: up 45%, down 35%, left into label area 20% */
+        var dirRoll = Math.random();
+        var ex, ey, dir;
+        if (dirRoll < 0.45) {
+          dir = 'up';
+          ex  = rand(200, Math.min(w - 60, 680));
+          ey  = rand(-70, -30);
+        } else if (dirRoll < 0.80) {
+          dir = 'down';
+          ex  = rand(200, Math.min(w - 60, 680));
+          ey  = h + rand(18, 58);
+        } else {
+          dir = 'left';
+          ex  = rand(12, 90);
+          ey  = h / 2 + rand(-20, 20);
+        }
+
+        /* Cubic bezier — sweep naturally with some wobble */
+        var cp1x = sx + (ex - sx) * rand(0.2, 0.4) + rand(-40, 40);
+        var cp1y = sy + rand(-40, 40);
+        var cp2x = sx + (ex - sx) * rand(0.6, 0.8) + rand(-40, 40);
+        var cp2y = ey + rand(-40, 40);
+
+        var d = 'M ' + sx + ' ' + sy +
+                ' C ' + cp1x + ' ' + cp1y +
+                ' '  + cp2x + ' ' + cp2y +
+                ' '  + ex   + ' ' + ey;
+
+        var mainPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        mainPath.setAttribute('d', d);
+        svg.appendChild(mainPath);
+
+        var len = mainPath.getTotalLength();
+        mainPath.style.strokeDasharray  = len;
+        mainPath.style.strokeDashoffset = len;
+
+        /* Arrowhead */
+        var near = mainPath.getPointAtLength(Math.max(0, len - 7));
+        var tip  = mainPath.getPointAtLength(len);
+        var ang  = Math.atan2(tip.y - near.y, tip.x - near.x);
+        var al   = 9, aa = Math.PI / 5;
+        var head = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        head.setAttribute('d',
+          'M ' + (tip.x - al * Math.cos(ang - aa)) + ' ' + (tip.y - al * Math.sin(ang - aa)) +
+          ' L ' + tip.x + ' ' + tip.y +
+          ' L ' + (tip.x - al * Math.cos(ang + aa)) + ' ' + (tip.y - al * Math.sin(ang + aa))
+        );
+        head.style.opacity = '0';
+        svg.appendChild(head);
+
+        /* Draw animation */
+        var duration = 380;
+        var startTs  = null;
+        var cancelled = false;
+        cancelAnim = function () { cancelled = true; };
+
+        function frame(ts) {
+          if (cancelled) return;
+          if (!startTs) startTs = ts;
+          var p  = Math.min((ts - startTs) / duration, 1);
+          var ep = 1 - Math.pow(1 - p, 2); /* ease-out */
+          mainPath.style.strokeDashoffset = len * (1 - ep);
+          if (p >= 1) {
+            head.style.opacity = '1';
+            /* Position text at arrow tip */
+            var tw = textEl.offsetWidth || 100;
+            if (dir === 'up') {
+              textEl.style.left = Math.max(0, ex - tw / 2) + 'px';
+              textEl.style.top  = (ey - 22) + 'px';
+            } else if (dir === 'down') {
+              textEl.style.left = Math.max(0, ex - tw / 2) + 'px';
+              textEl.style.top  = (ey + 6) + 'px';
+            } else {
+              textEl.style.left = Math.max(0, ex - tw - 8) + 'px';
+              textEl.style.top  = (ey - 10) + 'px';
+            }
+            textEl.style.opacity = '1';
+          } else {
+            requestAnimationFrame(frame);
+          }
+        }
+        requestAnimationFrame(frame);
+      });
+
+      row.addEventListener('mouseleave', function () {
+        if (cancelAnim) { cancelAnim(); cancelAnim = null; }
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+        textEl.style.opacity = '0';
+      });
+
+      specList.appendChild(row);
+    });
+
+    /* ── Lightbox ── */
+    var lightbox  = document.getElementById('suite-lightbox');
+    var lbPhoto   = document.getElementById('lb-photo');
+    var lbCounter = document.getElementById('lb-counter');
+    var frames    = document.querySelectorAll('.contact-frame');
+    var current   = 0;
+
+    function openLightbox(idx) {
+      current = idx;
+      updateLightbox();
+      lightbox.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+
+    function updateLightbox() {
+      var f   = frames[current];
+      var img = f.querySelector('img');
+      lbPhoto.innerHTML = '';
+      if (img) {
+        var clone  = document.createElement('img');
+        clone.src  = img.src;
+        clone.alt  = img.alt || 'Suite photo ' + (current + 1);
+        lbPhoto.appendChild(clone);
+      } else {
+        lbPhoto.textContent = 'SUITE PHOTO ' + (current + 1);
+      }
+      lbCounter.textContent = (current + 1) + ' / ' + frames.length;
+    }
+
+    frames.forEach(function (f) {
+      f.addEventListener('click', function () {
+        openLightbox(parseInt(this.dataset.index, 10));
+      });
+      f.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openLightbox(parseInt(this.dataset.index, 10));
+        }
+      });
+    });
+
+    function prevPhoto() {
+      current = (current - 1 + frames.length) % frames.length;
+      updateLightbox();
+    }
+    function nextPhoto() {
+      current = (current + 1) % frames.length;
+      updateLightbox();
+    }
+
+    document.getElementById('lb-close').addEventListener('click', closeLightbox);
+    document.getElementById('lb-prev').addEventListener('click', prevPhoto);
+    document.getElementById('lb-next').addEventListener('click', nextPhoto);
+    lightbox.addEventListener('click', function (e) {
+      if (e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!lightbox.classList.contains('is-open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') prevPhoto();
+      if (e.key === 'ArrowRight') nextPhoto();
+    });
+
+    /* ── Lightbox touch swipe ── */
+    var touchStartX = 0;
+    var touchEndX = 0;
+    lightbox.addEventListener('touchstart', function (e) {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    lightbox.addEventListener('touchend', function (e) {
+      touchEndX = e.changedTouches[0].screenX;
+      var diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) nextPhoto();
+        else prevPhoto();
+      }
+    }, { passive: true });
+
+    /* ── Keyboard hint — fade out after 3s ── */
+    var lbHint = document.getElementById('lb-hint');
+    var hintTimer = null;
+    function showHint() {
+      lbHint.classList.remove('fade-out');
+      clearTimeout(hintTimer);
+      hintTimer = setTimeout(function () {
+        lbHint.classList.add('fade-out');
+      }, 3000);
+    }
+    var origOpen = openLightbox;
+    openLightbox = function (idx) {
+      origOpen(idx);
+      showHint();
+    };
+
+    /* ── Parallax on contact sheet ── */
+    var sheet = document.querySelector('.suite-contact-sheet');
+    var parallaxFrames = document.querySelectorAll('.contact-frame');
+    var speeds = [0.03, -0.02, 0.04, -0.03, 0.025, -0.04, 0.035, -0.025, 0.03, -0.02, 0.04, -0.035, 0.028, -0.03, 0.022];
+    function onParallaxScroll() {
+      var rect = sheet.getBoundingClientRect();
+      var center = rect.top + rect.height / 2;
+      var offset = window.innerHeight / 2 - center;
+      parallaxFrames.forEach(function (f, i) {
+        var s = speeds[i] || 0;
+        f.style.marginTop = (offset * s).toFixed(1) + 'px';
+      });
+    }
+    window.addEventListener('scroll', onParallaxScroll, { passive: true });
+
+    /* ── Entrance animations (IntersectionObserver) ── */
+    parallaxFrames.forEach(function (f, i) {
+      f.classList.add('reveal');
+      f.style.setProperty('--reveal-i', i);
+    });
+    document.querySelectorAll('.spec-row').forEach(function (r) {
+      r.classList.add('reveal');
+    });
+
+    if ('IntersectionObserver' in window) {
+      /* Observe spec rows individually */
+      var rowObs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            rowObs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0, rootMargin: '0px 0px -60px 0px' });
+      document.querySelectorAll('.spec-row.reveal').forEach(function (el) {
+        rowObs.observe(el);
+      });
+
+      /* Observe the contact sheet section — reveal all frames when it enters */
+      var framesRevealed = false;
+      function revealFrames() {
+        if (framesRevealed) return;
+        framesRevealed = true;
+        parallaxFrames.forEach(function (f) { f.classList.add('is-visible'); });
+      }
+      var sheetObs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            revealFrames();
+            sheetObs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0 });
+      sheetObs.observe(sheet);
+      /* Fallback: also check on scroll in case observer missed initial state */
+      window.addEventListener('scroll', function checkSheet() {
+        var r = sheet.getBoundingClientRect();
+        if (r.top < window.innerHeight && r.bottom > 0) {
+          revealFrames();
+          window.removeEventListener('scroll', checkSheet);
+        }
+      }, { passive: true });
+    } else {
+      document.querySelectorAll('.reveal').forEach(function (el) {
+        el.classList.add('is-visible');
+      });
+    }
+
+
+  }());
+  </script>
+</body>
+</html>

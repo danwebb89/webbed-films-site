@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentary — Webbed Films</title>
+  <meta name="description" content="Documentary work by Daniel Webb — adventure, culture, and human stories from around the world.">
+  <meta property="og:title" content="Documentary — Webbed Films">
+  <meta property="og:description" content="Documentary editing and filmmaking by Daniel Webb.">
+  <meta property="og:image" content="https://www.webbedfilms.com/assets/images/logo.png">
+  <meta property="og:url" content="https://www.webbedfilms.com/documentary.html">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Cinzel loaded via style.css -->
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       GRADE MONITOR — documentary.html
+       ═══════════════════════════════════════════════════════════ */
+
+    html, body { overflow: hidden; }
+    html { background: #0d0d0d; }
+
+    #grade-ui {
+      position: fixed;
+      top: var(--header-h);
+      left: 0; right: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      background: #0d0d0d;
+    }
+
+    /* ══ ZONE 1: MONITOR ══════════════════════════════════════ */
+    #monitor {
+      flex: none;
+      height: 48vh;
+      position: relative;
+      background: #050505;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.7s ease;
+    }
+    #monitor.is-visible { opacity: 1; }
+
+    .mon-label {
+      position: absolute;
+      font-family: var(--font-ui);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(240,237,232,0.16);
+      z-index: 10;
+      pointer-events: none;
+    }
+    .mon-label-tl { top: 12px; left: 16px; }
+    .mon-label-bl { bottom: 12px; left: 16px; }
+    .mon-label-br {
+      bottom: 11px; right: 16px;
+      font-family: var(--font-ui);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: rgba(85,239,196,0.45);
+    }
+
+    #rec-badge {
+      position: absolute;
+      top: 10px; right: 16px;
+      display: flex; align-items: center; gap: 5px;
+      font-family: var(--font-ui);
+      font-size: 9px; letter-spacing: 0.2em;
+      color: rgba(240,237,232,0.22);
+      z-index: 10; pointer-events: none;
+    }
+    #rec-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #ff3344;
+    }
+    @keyframes rec-blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0.08; }
+    }
+    #rec-dot.blinking { animation: rec-blink 1.6s step-end infinite; }
+
+    .corner {
+      position: absolute;
+      width: 20px; height: 20px;
+      z-index: 9; pointer-events: none; opacity: 0;
+    }
+    .corner::before, .corner::after {
+      content: '';
+      position: absolute;
+      background: rgba(85,239,196,0.6);
+    }
+    .corner::before { height: 1px; width: 100%; top: 0; left: 0; }
+    .corner::after  { width: 1px; height: 100%; top: 0; left: 0; }
+    .corner-tl { top: 30px; left: 30px; }
+    .corner-tr { top: 30px; right: 30px; transform: scaleX(-1); }
+    .corner-bl { bottom: 30px; left: 30px; transform: scaleY(-1); }
+    .corner-br { bottom: 30px; right: 30px; transform: scale(-1); }
+
+    #monitor-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      opacity: 0.055; z-index: 1;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    @keyframes ken-burns {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.08) translate(-1%, -0.5%); }
+    }
+    #monitor-thumb-bg {
+      position: absolute; inset: -4%;
+      background-size: cover; background-position: center;
+      opacity: 0; z-index: 2;
+      transition: opacity 0.55s ease;
+    }
+    #monitor-thumb-bg.kb-active {
+      animation: ken-burns 12s ease-out forwards;
+    }
+    #monitor-thumb-bg::after {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(5,5,5,0.65);
+    }
+
+    #monitor-scanlines {
+      position: absolute; inset: 0;
+      z-index: 2; pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        rgba(0,0,0,0.12) 2px,
+        rgba(0,0,0,0.12) 4px
+      );
+      mix-blend-mode: multiply;
+    }
+
+    #monitor-vignette {
+      position: absolute; inset: 0;
+      z-index: 2; pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.55) 100%);
+    }
+
+    #monitor-gradient {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 50%;
+      background: linear-gradient(transparent 30%, rgba(0,0,0,0.92) 100%);
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    #monitor-glow {
+      position: absolute;
+      left: 0; right: 0; bottom: -1px;
+      height: 80px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    @keyframes idle-wash {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    #monitor-idle-wash {
+      position: absolute; inset: 0;
+      z-index: 1; pointer-events: none;
+      background: linear-gradient(135deg, rgba(85,239,196,0.04), rgba(116,185,255,0.04), rgba(0,206,201,0.04), rgba(162,155,254,0.04));
+      background-size: 400% 400%;
+      animation: idle-wash 20s ease infinite;
+      opacity: 1;
+      transition: opacity 0.6s ease;
+    }
+
+    #monitor-idle {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 4; pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .idle-msg {
+      font-family: var(--font-ui);
+      font-size: 14px;
+      letter-spacing: 0.35em;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+    }
+
+    #monitor-hover {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 5; opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .hover-cat {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .hover-title {
+      font-family: var(--font-heading);
+      font-size: 38px;
+      font-weight: 400;
+      color: rgba(240,237,232,0.88);
+      letter-spacing: 0.1em; text-align: center;
+      text-transform: uppercase;
+      padding: 0 60px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.9);
+    }
+    .hover-subtitle {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(85,239,196,0.6);
+      margin-top: 16px;
+    }
+
+    #monitor-content {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 6;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s ease;
+      padding: 44px 60px;
+    }
+    #monitor-content.active { opacity: 1; pointer-events: all; }
+
+    #monitor-info { text-align: center; max-width: 560px; }
+
+    #monitor-cat {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    #monitor-title {
+      font-family: var(--font-display);
+      font-size: 48px;
+      font-weight: 300; font-style: italic;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      line-height: 1.15; margin: 0 0 10px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.9);
+    }
+    #monitor-desc {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      color: rgba(240,237,232,0.55);
+      line-height: 1.55; margin: 0 0 8px;
+      text-shadow: 0 1px 12px rgba(0,0,0,0.8);
+    }
+    #monitor-year {
+      font-family: var(--font-ui);
+      font-size: 9px; letter-spacing: 0.22em;
+      color: rgba(240,237,232,0.3);
+      text-transform: uppercase; margin-bottom: 20px;
+    }
+    #monitor-cta {
+      font-family: var(--font-ui);
+      font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--color-muted);
+    }
+
+    #monitor-close {
+      position: absolute; top: 12px; left: 50%;
+      transform: translateX(-50%);
+      background: none;
+      border: 1px solid rgba(240,237,232,0.14);
+      color: rgba(240,237,232,0.32);
+      font-family: var(--font-ui);
+      font-size: 8.5px; letter-spacing: 0.2em;
+      cursor: pointer; padding: 4px 12px; z-index: 7;
+      transition: color 0.2s, border-color 0.2s;
+      white-space: nowrap;
+    }
+    #monitor-close:hover { color: var(--text); border-color: rgba(240,237,232,0.4); }
+
+    /* ══ ZONE 2: TIMELINE ═════════════════════════════════════ */
+    #timeline-panel {
+      flex: 1;
+      min-height: 0;
+      display: flex; overflow: hidden;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      opacity: 0; transform: translateY(18px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    #timeline-panel.is-visible { opacity: 1; transform: translateY(0); }
+
+    #cat-label-strip {
+      width: 36px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      background: #0f0f0f;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      z-index: 2;
+    }
+    .cat-strip-spacer {
+      height: 22px;
+      flex-shrink: 0;
+      background: #111;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .cat-strip-label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cat-strip-text {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-family: var(--font-ui);
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    #timeline-scroll {
+      flex: 1; overflow-x: auto; overflow-y: hidden; position: relative;
+    }
+    #timeline-scroll::-webkit-scrollbar { height: 4px; }
+    #timeline-scroll::-webkit-scrollbar-track { background: transparent; }
+    #timeline-scroll::-webkit-scrollbar-thumb { background: rgba(85,239,196,0.22); border-radius: 2px; }
+    #timeline-scroll { scrollbar-width: thin; scrollbar-color: rgba(85,239,196,0.22) transparent; }
+
+    #timeline-inner {
+      height: 100%; display: flex; flex-direction: column;
+      position: relative; min-width: 100%;
+    }
+
+    #tc-ruler {
+      height: 22px; flex-shrink: 0;
+      position: relative;
+      background: #111;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .tc-mark {
+      position: absolute;
+      font-family: var(--font-ui);
+      font-size: 7px;
+      color: rgba(255,255,255,0.25);
+      bottom: 4px; transform: translateX(-50%);
+      white-space: nowrap; pointer-events: none;
+    }
+    .tc-tick {
+      position: absolute; bottom: 0;
+      width: 1px; height: 6px;
+      background: rgba(255,255,255,0.09);
+      transform: translateX(-50%); pointer-events: none;
+    }
+    .tc-tick-major { height: 10px; background: rgba(255,255,255,0.14); }
+
+    #track-lanes {
+      flex: 1; min-height: 0;
+      position: relative;
+      display: flex; flex-direction: column;
+    }
+    .track-lane {
+      flex: 1; position: relative;
+      display: flex; gap: 6px; padding: 0 28px;
+      align-items: stretch;
+    }
+
+    .clip-block {
+      flex: 1; min-width: 0;
+      margin: 4px 0;
+      border-radius: 3px;
+      display: flex; flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 0 10px;
+      cursor: pointer; overflow: hidden;
+      transition: filter 0.15s ease, box-shadow 0.15s ease, transform 0.2s ease;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);
+    }
+    .clip-block:hover { filter: brightness(1.45); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07); }
+    .clip-block.active { box-shadow: 0 0 0 1px rgba(255,255,255,0.35); transform: translateY(-2px); }
+
+    .clip-title {
+      font-family: var(--font-ui);
+      font-size: 11px; letter-spacing: 0.06em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      color: rgba(255,255,255,0.92);
+      pointer-events: none; line-height: 1;
+      max-width: 100%;
+    }
+    .clip-year {
+      font-family: var(--font-ui);
+      font-size: 7px; letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.45);
+      pointer-events: none;
+      margin-top: 3px; line-height: 1;
+    }
+
+    #playhead {
+      position: absolute; top: 0; bottom: 0;
+      width: 1px; background: rgba(255,255,255,0.55);
+      z-index: 4; pointer-events: none; left: 0;
+      transition: left 0.18s ease;
+    }
+    #playhead::before {
+      content: ''; position: absolute;
+      top: -1px; left: -4px;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 6px solid rgba(255,255,255,0.55);
+    }
+
+    /* ══ ZONE 3: STATUS BAR ═══════════════════════════════════ */
+    #status-bar {
+      height: 40px; flex-shrink: 0;
+      background: #0a0a0a;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 16px;
+    }
+    .sb-text {
+      font-family: var(--font-ui);
+      font-size: 8.5px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: rgba(240,237,232,0.2);
+    }
+    .sb-text em { font-style: normal; color: rgba(85,239,196,0.65); }
+
+    /* ══ MOBILE ═══════════════════════════════════════════════ */
+    #mobile-track-list { display: none; }
+
+    @media (max-width: 768px) {
+      #monitor      { height: 50vh; }
+      #timeline-panel { display: none; }
+      #mobile-track-list {
+        display: block; flex: 1; min-height: 0; overflow-y: auto;
+        background: #0d0d0d;
+      }
+      #status-bar { height: 36px; }
+      .corner { display: none; }
+      #monitor-title  { font-size: 28px; }
+      .hover-title    { font-size: 26px; }
+      #monitor-content { padding: 24px 24px; }
+    }
+
+    .mobile-clips-wrap { display: flex; flex-wrap: wrap; gap: 6px; padding: 16px; }
+    .mobile-clip-pill {
+      font-family: var(--font-ui); font-size: 9px; letter-spacing: 0.06em;
+      padding: 5px 10px; border-radius: 2px;
+      cursor: pointer; color: rgba(255,255,255,0.72);
+      transition: filter 0.15s ease;
+    }
+    .mobile-clip-pill:hover  { filter: brightness(1.4); }
+    .mobile-clip-pill.active { filter: brightness(1.4); box-shadow: 0 0 0 1px rgba(255,255,255,0.4); }
+  </style>
+</head>
+<body>
+
+  <header id="site-header">
+    <a href="index.html" class="logo-link">
+      <img src="assets/images/logo.png" alt="Webbed Films" class="logo" onerror="this.style.display='none'">
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="the-suite.html">The Suite</a></li>
+        <li class="has-dropdown">
+          <a href="work.html">Work</a>
+          <ul class="dropdown">
+            <li><a href="documentary.html" aria-current="page">Documentary</a></li>
+            <li><a href="corporate.html">Corporate</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="shorts.html">Shorts</a></li>
+          </ul>
+        </li>
+        <li class="has-dropdown">
+          <a href="webbed-films.html">Originals</a>
+          <ul class="dropdown">
+            <li><a href="webbed-films/rosemary.html">The Rite of Rosemary</a></li>
+            <li><a href="webbed-films/ngs.html">NGS</a></li>
+            <li><a href="webbed-films/blackout.html">Blackout</a></li>
+            <li><a href="webbed-films/christmas-claret.html">A Christmas Claret</a></li>
+          </ul>
+        </li>
+        <li><a href="https://www.revelstokefilms.com" target="_blank" rel="noopener noreferrer">Revelstoke</a></li>
+        <li><a href="https://watch.webbedfilms.com" target="_blank" rel="noopener noreferrer">Watch</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <div class="mobile-nav" id="mobile-nav" role="dialog" aria-label="Navigation menu">
+    <button class="mobile-nav-close" id="mobile-nav-close" aria-label="Close menu">&#x2715;</button>
+    <ul>
+      <li><a href="about.html">About</a></li>
+      <li><a href="the-suite.html">The Suite</a></li>
+      <li><a href="work.html">Work</a></li>
+      <li><a href="documentary.html" aria-current="page">Documentary</a></li>
+      <li><a href="corporate.html">Corporate</a></li>
+      <li><a href="features.html">Features</a></li>
+      <li><a href="shorts.html">Shorts</a></li>
+      <li><span class="mobile-nav-section">Originals</span></li>
+      <li><a href="webbed-films/rosemary.html">The Rite of Rosemary</a></li>
+      <li><a href="webbed-films/ngs.html">NGS</a></li>
+      <li><a href="webbed-films/blackout.html">Blackout</a></li>
+      <li><a href="webbed-films/christmas-claret.html">A Christmas Claret</a></li>
+      <li><a href="https://www.revelstokefilms.com" target="_blank" rel="noopener noreferrer">Revelstoke</a></li>
+        <li><a href="https://watch.webbedfilms.com" target="_blank" rel="noopener noreferrer">Watch</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════ GRADE MONITOR UI -->
+  <div id="grade-ui">
+
+    <!-- ZONE 1: Monitor -->
+    <div id="monitor" role="region" aria-label="Project preview monitor">
+      <span class="mon-label mon-label-br" id="timecode" aria-hidden="true">00:00:00:00</span>
+
+      <div class="corner corner-tl" aria-hidden="true"></div>
+      <div class="corner corner-tr" aria-hidden="true"></div>
+      <div class="corner corner-bl" aria-hidden="true"></div>
+      <div class="corner corner-br" aria-hidden="true"></div>
+
+      <canvas id="monitor-canvas" aria-hidden="true"></canvas>
+      <div id="monitor-thumb-bg" aria-hidden="true"></div>
+      <div id="monitor-scanlines" aria-hidden="true"></div>
+      <div id="monitor-vignette" aria-hidden="true"></div>
+      <div id="monitor-idle-wash" aria-hidden="true"></div>
+      <div id="monitor-gradient" aria-hidden="true"></div>
+      <div id="monitor-glow" aria-hidden="true"></div>
+
+      <div id="monitor-idle">
+        <span class="idle-msg"></span>
+      </div>
+
+      <div id="monitor-hover" aria-hidden="true">
+        <div class="hover-title" id="hover-title"></div>
+        <div class="hover-subtitle" id="hover-subtitle"></div>
+      </div>
+
+    </div>
+
+    <!-- ZONE 2: Timeline -->
+    <div id="timeline-panel" role="region" aria-label="Project timeline">
+      <div id="cat-label-strip" aria-hidden="true">
+        <div class="cat-strip-spacer"></div>
+        <div class="cat-strip-label">
+          <span class="cat-strip-text" style="color:#55efc4">DOCUMENTARY</span>
+        </div>
+      </div>
+      <div id="timeline-scroll">
+        <div id="timeline-inner">
+          <div id="tc-ruler" aria-hidden="true"></div>
+          <div id="track-lanes">
+            <div id="playhead" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile clip list -->
+    <div id="mobile-track-list" aria-label="Documentary projects"></div>
+
+
+  </div>
+
+  <script src="js/nav.js"></script>
+  <script src="js/flourishes.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    var PAGE_CATEGORY = 'documentary';
+    var CLIP_COLORS = ['#55efc4', '#74b9ff', '#ffeaa7', '#e17055', '#fd79a8', '#a29bfe', '#00cec9'];
+    var TRACK_LABEL = 'DOCUMENTARY';
+    var IMG_EXTS = ['jpg', 'png', 'avif', 'JPG'];
+
+    var phX = 0, phMax = 1600, phPaused = false;
+    var clipData = [], kbIndex = -1;
+    var activeIdleIndex = -1, isHovering = false;
+
+    function loadImage (title, onSuccess, onFail) {
+      var i = 0;
+      function tryNext () {
+        if (i >= IMG_EXTS.length) { if (onFail) onFail(); return; }
+        var img = new Image();
+        img.onload = function () { onSuccess(img.src); };
+        img.onerror = function () { i++; tryNext(); };
+        img.src = 'assets/images/' + title + '.' + IMG_EXTS[i];
+      }
+      tryNext();
+    }
+
+    function initNoise () {
+      var canvas = document.getElementById('monitor-canvas');
+      if (!canvas || !canvas.getContext) return;
+      var ctx = canvas.getContext('2d');
+      function resize () {
+        canvas.width  = canvas.offsetWidth  || canvas.parentElement.offsetWidth  || 800;
+        canvas.height = canvas.offsetHeight || canvas.parentElement.offsetHeight || 400;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+      function draw () {
+        var w = canvas.width, h = canvas.height;
+        if (!w || !h) { requestAnimationFrame(draw); return; }
+        var img = ctx.createImageData(w, h), d = img.data;
+        for (var i = 0; i < d.length; i += 4) {
+          var v = (Math.random() * 255) | 0;
+          d[i] = d[i+1] = d[i+2] = v; d[i+3] = 255;
+        }
+        ctx.putImageData(img, 0, 0);
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    function initTimecode () {
+      var el = document.getElementById('timecode');
+      if (!el) return;
+      var FPS = 25, frame = 0;
+      function pad (n) { return ('0' + n).slice(-2); }
+      function tick () {
+        frame++;
+        el.textContent = pad(Math.floor(frame / (FPS*3600)) % 24) + ':' +
+                         pad(Math.floor(frame / (FPS*60)) % 60) + ':' +
+                         pad(Math.floor(frame / FPS) % 60) + ':' +
+                         pad(frame % FPS);
+        requestAnimationFrame(tick);
+      }
+      tick();
+      var dot = document.getElementById('rec-dot');
+      if (dot) dot.classList.add('blinking');
+    }
+
+    function buildTimeline (clips) {
+      var lanesEl    = document.getElementById('track-lanes');
+      var rulerEl    = document.getElementById('tc-ruler');
+      var mobileList = document.getElementById('mobile-track-list');
+      var sbCount    = document.getElementById('sb-count');
+      var playhead   = document.getElementById('playhead');
+
+      var lane = document.createElement('div');
+      lane.className = 'track-lane';
+
+      clips.forEach(function (clip, i) {
+        var color = CLIP_COLORS[i % CLIP_COLORS.length];
+        var block = document.createElement('div');
+        block.className = 'clip-block';
+        block.style.background = 'linear-gradient(180deg, ' + color + '44 0%, ' + color + '18 100%)';
+        block.style.borderLeft = '3px solid ' + color;
+        block.dataset.slug     = clip.slug;
+        block.title            = clip.title;
+
+        loadImage(clip.title, function (src) {
+          block.style.backgroundImage = 'linear-gradient(180deg, ' + color + 'cc 0%, ' + color + '88 100%), url("' + src + '")';
+          block.style.backgroundSize = 'auto, cover';
+          block.style.backgroundPosition = 'center, center';
+        });
+
+        block.addEventListener('mouseenter', function () { hoverClip(clip, block, color); });
+        block.addEventListener('mouseleave', function () { clearHover(block); });
+        block.addEventListener('click', function () {
+          if (clip.link) window.open(clip.link, '_blank', 'noopener,noreferrer');
+        });
+        lane.appendChild(block);
+        clipData.push({ clip: clip, el: block, color: color });
+      });
+
+      lanesEl.insertBefore(lane, playhead);
+
+      var pillWrap = document.createElement('div');
+      pillWrap.className = 'mobile-clips-wrap';
+      clips.forEach(function (clip, i) {
+        var color = CLIP_COLORS[i % CLIP_COLORS.length];
+        var pill = document.createElement('div');
+        pill.className = 'mobile-clip-pill';
+        pill.style.background  = color + '33';
+        pill.style.borderLeft  = '3px solid ' + color;
+        pill.textContent       = clip.title;
+        pill.addEventListener('mouseenter', function () { hoverClip(clip, pill, color); });
+        pill.addEventListener('mouseleave', function () { clearHover(pill); });
+        pill.addEventListener('click', function () {
+          if (clip.link) window.open(clip.link, '_blank', 'noopener,noreferrer');
+        });
+        pillWrap.appendChild(pill);
+      });
+      mobileList.appendChild(pillWrap);
+
+      if (sbCount) {
+        sbCount.innerHTML = '<em>' + clips.length + '</em>\u00a0' + TRACK_LABEL + ' PROJECTS';
+      }
+
+      requestAnimationFrame(function () {
+        var w = lanesEl.offsetWidth || 1600;
+        phMax = w;
+        buildRuler(rulerEl, w);
+      });
+    }
+
+    function buildRuler (rulerEl, totalWidth) {
+      var count = 16, every = totalWidth / count;
+      for (var i = 1; i < count; i++) {
+        var x = every * i;
+        var secs = Math.round(i * 3.2);
+        var mark = document.createElement('span');
+        mark.className = 'tc-mark'; mark.style.left = x + 'px';
+        mark.textContent = ('0' + Math.floor(secs / 60)).slice(-2) + ':' +
+                           ('0' + (secs % 60)).slice(-2) + ':00';
+        rulerEl.appendChild(mark);
+        var tick = document.createElement('div');
+        tick.className = 'tc-tick tc-tick-major'; tick.style.left = x + 'px';
+        rulerEl.appendChild(tick);
+      }
+    }
+
+    function hoverClip (clip, el, color) {
+      isHovering = true;
+      var t = document.getElementById('hover-title');
+      if (t) t.textContent = clip.title;
+      var sub = document.getElementById('hover-subtitle');
+      if (sub) sub.textContent = clip.link ? 'WATCH \u25B6' : 'AVAILABLE ON REQUEST';
+      var h = document.getElementById('monitor-hover');
+      if (h) h.style.opacity = '1';
+      if (el) el.classList.add('active');
+
+      phPaused = true;
+      var ph = document.getElementById('playhead');
+      if (ph && el && el.classList.contains('clip-block')) {
+        phX = el.offsetLeft + el.offsetWidth / 2;
+        ph.style.left = phX + 'px';
+      }
+
+      var wash = document.getElementById('monitor-idle-wash');
+      if (wash) wash.style.opacity = '0';
+
+      var thumb = document.getElementById('monitor-thumb-bg');
+      if (thumb) {
+        thumb.classList.remove('kb-active');
+        void thumb.offsetWidth;
+        loadImage(clip.title, function (src) {
+          thumb.style.backgroundImage = 'url("' + src + '")';
+          thumb.style.opacity = '1';
+          thumb.classList.add('kb-active');
+        }, function () { thumb.style.opacity = '0'; });
+      }
+
+      var glow = document.getElementById('monitor-glow');
+      if (glow && color) {
+        glow.style.background = 'radial-gradient(ellipse at center bottom, ' + color + '44 0%, transparent 70%)';
+        glow.style.opacity = '1';
+      }
+
+      var canvas = document.getElementById('monitor-canvas');
+      if (canvas) canvas.style.opacity = '0.02';
+    }
+
+    function clearHover (el) {
+      isHovering = false;
+      if (el) el.classList.remove('active');
+      phPaused = false;
+      activeIdleIndex = -1;
+      var canvas = document.getElementById('monitor-canvas');
+      if (canvas) canvas.style.opacity = '0.055';
+      var wash = document.getElementById('monitor-idle-wash');
+      if (wash) wash.style.opacity = '1';
+    }
+
+    function showIdleClip (idx) {
+      if (idx === activeIdleIndex || isHovering) return;
+      activeIdleIndex = idx;
+      var d = clipData[idx];
+      if (!d) return;
+
+      var thumb = document.getElementById('monitor-thumb-bg');
+      if (!thumb) return;
+      thumb.classList.remove('kb-active');
+      void thumb.offsetWidth;
+
+      var title = d.clip.title;
+      loadImage(title, function (src) {
+        if (isHovering) return;
+        thumb.style.backgroundImage = 'url("' + src + '")';
+        thumb.style.opacity = '0.6';
+        thumb.classList.add('kb-active');
+      });
+
+      var glow = document.getElementById('monitor-glow');
+      if (glow) {
+        glow.style.background = 'radial-gradient(ellipse at center bottom, ' + d.color + '22 0%, transparent 70%)';
+        glow.style.opacity = '1';
+      }
+
+      var hover = document.getElementById('monitor-hover');
+      if (hover) hover.style.opacity = '1';
+      var ht = document.getElementById('hover-title');
+      if (ht) ht.textContent = d.clip.title;
+      var sub = document.getElementById('hover-subtitle');
+      if (sub) sub.textContent = d.clip.link ? 'WATCH \u25B6' : 'AVAILABLE ON REQUEST';
+    }
+
+    function getClipAtPlayhead () {
+      for (var i = 0; i < clipData.length; i++) {
+        var el = clipData[i].el;
+        var left = el.offsetLeft;
+        var right = left + el.offsetWidth;
+        if (phX >= left && phX < right) return i;
+      }
+      return -1;
+    }
+
+    function startPlayhead () {
+      var ph = document.getElementById('playhead'), speed = 0.3;
+      function step () {
+        if (!phPaused) {
+          phX = (phX + speed) % (phMax || 1600);
+          if (ph) ph.style.left = phX + 'px';
+          var idx = getClipAtPlayhead();
+          if (idx >= 0) showIdleClip(idx);
+        }
+        requestAnimationFrame(step);
+      }
+      step();
+    }
+
+    function initDragScroll () {
+      var el = document.getElementById('timeline-scroll');
+      if (!el) return;
+      var down = false, startX, initScroll;
+      el.addEventListener('mousedown', function (e) {
+        if (e.target.closest('.clip-block')) return;
+        down = true; startX = e.pageX - el.offsetLeft; initScroll = el.scrollLeft;
+        el.style.cursor = 'grabbing';
+      });
+      window.addEventListener('mouseup', function () {
+        if (!down) return; down = false;
+        var s = document.getElementById('timeline-scroll'); if (s) s.style.cursor = '';
+      });
+      el.addEventListener('mousemove', function (e) {
+        if (!down) return; e.preventDefault();
+        el.scrollLeft = initScroll - ((e.pageX - el.offsetLeft) - startX) * 1.1;
+      });
+    }
+
+    function initAnimations () {
+      setTimeout(function () { var t = document.getElementById('timeline-panel'); if (t) t.classList.add('is-visible'); }, 300);
+      setTimeout(function () { var m = document.getElementById('monitor'); if (m) m.classList.add('is-visible'); }, 500);
+      setTimeout(function () {
+        document.querySelectorAll('.corner').forEach(function (c) { c.style.transition = 'opacity 0.5s ease'; c.style.opacity = '1'; });
+      }, 700);
+    }
+
+    initNoise(); initTimecode(); initAnimations(); initDragScroll();
+
+
+    fetch('data/portfolio.json')
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        buildTimeline(data[PAGE_CATEGORY] || []);
+        startPlayhead();
+      })
+      .catch(function () {
+        startPlayhead();
+        var sb = document.getElementById('sb-count');
+        if (sb) sb.textContent = TRACK_LABEL + ' PROJECTS';
+      });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      if (!clipData.length) return;
+      e.preventDefault();
+      document.querySelectorAll('.clip-block.active').forEach(function (b) { b.classList.remove('active'); });
+      if (e.key === 'ArrowRight') {
+        kbIndex = (kbIndex + 1) % clipData.length;
+      } else {
+        kbIndex = kbIndex <= 0 ? clipData.length - 1 : kbIndex - 1;
+      }
+      var d = clipData[kbIndex];
+      hoverClip(d.clip, d.el, d.color);
+    });
+
+  }());
+  </script>
+
+  <footer class="site-footer">
+    <div class="footer-bottom">
+      <span class="footer-copy">&copy; 2026 Webbed Films</span>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/webbedfilms/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </a>
+        <a href="https://www.threads.net/@webbedfilms" target="_blank" rel="noopener noreferrer" aria-label="Threads">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.848 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.583-1.31-.879-2.367-.883h-.049c-.846 0-1.994.233-2.721 1.32L7.734 9.258c.598-.863 1.37-1.496 2.299-1.882.977-.405 2.07-.592 3.198-.555 1.865.067 3.305.676 4.28 1.81 1.166 1.35 1.606 3.274 1.255 5.64.024.018.049.035.073.053.57.417 1.073.964 1.466 1.618 1.083 1.798 1.019 4.384-.744 6.107-1.978 1.936-4.29 2.772-7.375 2.951z"/></svg>
+        </a>
+        <a href="https://x.com/webbedfilms_uk" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

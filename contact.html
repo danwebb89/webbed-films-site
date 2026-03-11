@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — Webbed Films</title>
+  <meta name="description" content="Get in touch with Daniel Webb at Webbed Films. Enquiries for editing, directing, and branded content projects.">
+  <meta property="og:title" content="Contact — Webbed Films">
+  <meta property="og:description" content="Get in touch with Daniel Webb for editing and filmmaking enquiries.">
+  <meta property="og:image" content="https://www.webbedfilms.com/assets/images/logo.png">
+  <meta property="og:url" content="https://www.webbedfilms.com/contact.html">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+
+    /* ═══════════════════════════════════════════════════════════════
+       CONTACT PAGE
+       ═══════════════════════════════════════════════════════════════ */
+
+    html { background: #000; }
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; }
+
+    /* ── Background ── */
+    .contact-bg-video {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .contact-bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.80);
+      z-index: -1;
+      pointer-events: none;
+      transition: background 0.4s ease;
+    }
+
+    .contact-bg-overlay.is-intense {
+      background: rgba(0, 0, 0, 0.88);
+    }
+
+    /* ── Hero ── */
+    .contact-hero {
+      padding-top: calc(var(--header-h, 70px) + 20px);
+      padding-bottom: 12px;
+      padding-left: 10vw;
+      padding-right: 10vw;
+      text-align: center;
+    }
+
+    /* ── Scroll indicator ── */
+    .scroll-hint {
+      display: none;
+    }
+
+    @keyframes c-scroll-pulse {
+      0%, 100% { transform: rotate(45deg) translateY(0); opacity: 0.6; }
+      50%      { transform: rotate(45deg) translateY(4px); opacity: 1; }
+    }
+
+    .contact-hero h1 {
+      margin: 0;
+      line-height: 1.0;
+    }
+
+    .contact-hero-line1 {
+      display: block;
+      font-family: var(--font-display);
+      font-size: clamp(48px, 8vw, 100px);
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      opacity: 0;
+      transform: translateY(32px);
+      animation: c-fade-up 0.9s ease 0.2s forwards;
+    }
+
+    .contact-hero-line2 {
+      display: block;
+      font-family: var(--font-display);
+      font-size: clamp(48px, 8vw, 100px);
+      font-weight: 300;
+      font-style: italic;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      opacity: 0;
+      transform: translateY(32px);
+      animation: c-fade-up 0.9s ease 0.45s forwards;
+    }
+
+    .contact-hero-label {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.35em;
+      color: var(--color-gold);
+      text-transform: uppercase;
+      margin-top: 18px;
+      opacity: 0;
+      animation: c-fade-in 0.7s ease 0.85s forwards;
+    }
+
+    .contact-hero-rule {
+      display: none;
+    }
+
+
+    /* ── "LET'S TALK" gold shimmer sweep ── */
+    .contact-hero-label {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-hero-label::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(200, 169, 110, 0.35) 50%, transparent 100%);
+      animation: c-shimmer 2s ease 2.0s forwards;
+    }
+
+    @keyframes c-shimmer {
+      to { left: 200%; }
+    }
+
+    @keyframes c-fade-up {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes c-fade-in {
+      to { opacity: 1; }
+    }
+
+    @keyframes c-line-draw {
+      to { width: 200px; }
+    }
+
+    /* ── Contact section (form-forward 2-col) ── */
+    .contact-section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 10vw 80px;
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 60px;
+      align-items: start;
+    }
+
+    /* ── Column shared animation ── */
+    .contact-col {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .contact-col.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Right column fires slightly later */
+    #contact-details {
+      transition-delay: 0.15s;
+    }
+
+    /* ── Column label ── */
+    .contact-col-label {
+      font-family: var(--font-ui);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.35em;
+      color: var(--color-gold);
+      text-transform: uppercase;
+      margin: 0 0 28px;
+    }
+
+    /* ── Email ── */
+    .contact-email-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .contact-email-link {
+      font-family: var(--font-display);
+      font-size: clamp(16px, 2.2vw, 22px);
+      font-weight: 300;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.2s ease;
+    }
+
+    .contact-email-link {
+      position: relative;
+    }
+
+    .contact-email-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--color-gold);
+      transition: width 0.4s ease;
+    }
+
+    .contact-email-link:hover {
+      color: var(--color-gold);
+    }
+
+    .contact-email-link:hover::after {
+      width: 100%;
+    }
+
+    .copy-btn {
+      position: relative;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--color-muted);
+      font-family: var(--font-ui);
+      font-size: 8px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: border-color 0.2s ease, color 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--color-gold);
+      color: var(--color-gold);
+    }
+
+    .copy-tooltip {
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-gold);
+      color: #0a0a0a;
+      font-family: var(--font-ui);
+      font-size: 8px;
+      letter-spacing: 0.12em;
+      padding: 4px 8px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .copy-tooltip.is-visible { opacity: 1; }
+
+    /* ── Location ── */
+    .contact-location {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: var(--color-muted);
+      text-transform: uppercase;
+      margin: 16px 0 0;
+    }
+
+    .contact-coords {
+      font-family: var(--font-ui);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      color: rgba(200, 169, 110, 0.35);
+      margin: 4px 0 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(200, 169, 110, 0.12);
+    }
+
+    /* ── Social links (text) ── */
+    .contact-socials {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .contact-social-link {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      color: var(--color-muted);
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: color 0.2s ease, padding-left 0.25s ease;
+      position: relative;
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+    }
+
+    .contact-social-link::before {
+      content: '\2192';
+      position: absolute;
+      left: -16px;
+      opacity: 0;
+      color: var(--color-gold);
+      transition: opacity 0.2s ease, left 0.25s ease;
+    }
+
+    .contact-social-link:hover {
+      color: var(--color-gold);
+      padding-left: 18px;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    .contact-social-link:hover::before {
+      opacity: 1;
+      left: 0;
+    }
+
+    /* ── Staggered social link reveal ── */
+    .contact-social-link {
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: color 0.2s ease, padding-left 0.25s ease,
+                  opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .contact-col.is-visible .contact-social-link {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .contact-col.is-visible .contact-social-link:nth-child(1) { transition-delay: 0.15s; }
+    .contact-col.is-visible .contact-social-link:nth-child(2) { transition-delay: 0.25s; }
+    .contact-col.is-visible .contact-social-link:nth-child(3) { transition-delay: 0.35s; }
+    .contact-col.is-visible .contact-social-link:nth-child(4) { transition-delay: 0.45s; }
+    .contact-col.is-visible .contact-social-link:nth-child(5) { transition-delay: 0.55s; }
+
+    /* ── Form ── */
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+      padding-left: 20px;
+      border-left: 1px solid rgba(200, 169, 110, 0.08);
+    }
+
+    /* Gold corner accents on the form */
+    .contact-form::before,
+    .contact-form::after {
+      content: '';
+      position: absolute;
+      left: -1px;
+      width: 1px;
+      height: 24px;
+      background: var(--color-gold);
+    }
+
+    .contact-form::before { top: 0; }
+    .contact-form::after  { bottom: 0; }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .form-label {
+      font-family: var(--font-ui);
+      font-size: 8px;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      color: var(--color-muted);
+      text-transform: uppercase;
+    }
+
+    .form-input,
+    .form-textarea {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 14px;
+      padding: 10px 0;
+      outline: none;
+      width: 100%;
+      transition: border-bottom-color 0.25s ease;
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: rgba(255, 255, 255, 0.15);
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      border-bottom-color: var(--color-gold);
+      box-shadow: 0 1px 8px -2px rgba(200, 169, 110, 0.25);
+    }
+
+    .form-input.has-error,
+    .form-textarea.has-error {
+      border-bottom-color: #ff4444;
+      animation: c-shake 0.35s ease;
+    }
+
+    @keyframes c-shake {
+      0%, 100% { transform: translateX(0);  }
+      25%       { transform: translateX(-4px); }
+      75%       { transform: translateX(4px);  }
+    }
+
+    .form-textarea {
+      resize: none;
+      height: 120px;
+      line-height: 1.65;
+    }
+
+    .form-submit {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      padding: 14px 32px;
+      background: transparent;
+      border: 1px solid var(--color-gold);
+      color: var(--color-gold);
+      cursor: pointer;
+      transition: background 0.35s ease, color 0.35s ease,
+                  opacity 0.25s ease, box-shadow 0.35s ease;
+      align-self: flex-start;
+      margin-top: 4px;
+      position: relative;
+    }
+
+    .form-submit:hover:not(:disabled) {
+      background: var(--color-gold);
+      color: #0a0a0a;
+      box-shadow: 0 0 20px -4px rgba(200, 169, 110, 0.4),
+                  0 0 40px -8px rgba(200, 169, 110, 0.15);
+    }
+
+    .form-submit:disabled {
+      opacity: 0.65;
+      cursor: default;
+    }
+
+    /* ── Form success state ── */
+    .contact-form.is-sent {
+      opacity: 0;
+      transform: translateY(-12px);
+      pointer-events: none;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .contact-success {
+      display: none;
+      text-align: center;
+      padding: 60px 0;
+    }
+
+    .contact-success.is-visible {
+      display: block;
+      animation: c-fade-up 0.6s ease forwards;
+    }
+
+    .contact-success-icon {
+      width: 48px;
+      height: 48px;
+      border: 1px solid var(--color-gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      color: var(--color-gold);
+      font-size: 20px;
+    }
+
+    .contact-success-heading {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 300;
+      color: var(--text);
+      margin: 0 0 8px;
+    }
+
+    .contact-success-sub {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--color-muted);
+      margin: 0;
+    }
+
+    /* ── Floating form labels ── */
+    .form-field {
+      position: relative;
+    }
+
+    .form-label {
+      transition: transform 0.25s ease, color 0.25s ease, font-size 0.25s ease;
+      transform-origin: left;
+    }
+
+    .form-field:focus-within .form-label {
+      transform: translateY(-4px);
+      color: var(--color-gold);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .contact-hero {
+        padding-left: 24px;
+        padding-right: 24px;
+        padding-top: 90px;
+        padding-bottom: 12px;
+      }
+
+      .contact-section {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        padding: 0 24px 60px;
+      }
+
+      /* On mobile, show details first, form second */
+      #contact-details { order: -1; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Background -->
+  <video class="contact-bg-video" autoplay muted loop playsinline aria-hidden="true">
+    <source src="assets/video/noise background.mp4" type="video/mp4">
+  </video>
+  <div class="contact-bg-overlay" id="contact-bg-overlay"></div>
+
+  <!-- ── Header ── -->
+  <header id="site-header">
+    <a href="index.html" class="logo-link">
+      <img src="assets/images/logo.png" alt="Webbed Films" class="logo" onerror="this.style.display='none'">
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="the-suite.html">The Suite</a></li>
+        <li class="has-dropdown">
+          <a href="work.html">Work</a>
+          <ul class="dropdown">
+            <li><a href="documentary.html">Documentary</a></li>
+            <li><a href="corporate.html">Corporate</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="shorts.html">Shorts</a></li>
+          </ul>
+        </li>
+        <li class="has-dropdown">
+          <a href="webbed-films.html">Originals</a>
+          <ul class="dropdown">
+            <li><a href="webbed-films/rosemary.html">The Rite of Rosemary</a></li>
+            <li><a href="webbed-films/ngs.html">NGS</a></li>
+            <li><a href="webbed-films/blackout.html">Blackout</a></li>
+            <li><a href="webbed-films/christmas-claret.html">A Christmas Claret</a></li>
+          </ul>
+        </li>
+        <li><a href="https://www.revelstokefilms.com" target="_blank" rel="noopener noreferrer">Revelstoke</a></li>
+        <li><a href="https://watch.webbedfilms.com" target="_blank" rel="noopener noreferrer">Watch</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <div class="mobile-nav" id="mobile-nav" role="dialog" aria-label="Navigation menu">
+    <button class="mobile-nav-close" id="mobile-nav-close" aria-label="Close menu">&#x2715;</button>
+    <ul>
+      <li><a href="about.html">About</a></li>
+      <li><a href="the-suite.html">The Suite</a></li>
+      <li><a href="work.html">Work</a></li>
+      <li><a href="documentary.html">Documentary</a></li>
+      <li><a href="corporate.html">Corporate</a></li>
+      <li><a href="features.html">Features</a></li>
+      <li><a href="shorts.html">Shorts</a></li>
+      <li><span class="mobile-nav-section">Originals</span></li>
+      <li><a href="webbed-films/rosemary.html">The Rite of Rosemary</a></li>
+      <li><a href="webbed-films/ngs.html">NGS</a></li>
+      <li><a href="webbed-films/blackout.html">Blackout</a></li>
+      <li><a href="webbed-films/christmas-claret.html">A Christmas Claret</a></li>
+      <li><a href="https://www.revelstokefilms.com" target="_blank" rel="noopener noreferrer">Revelstoke</a></li>
+        <li><a href="https://watch.webbedfilms.com" target="_blank" rel="noopener noreferrer">Watch</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+
+  <main>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 1 — HERO (daily rotating tagline)
+         ═══════════════════════════════════════ -->
+    <section class="contact-hero" aria-label="Contact heading">
+      <h1>
+        <span class="contact-hero-line1 glitch" data-text="Got a story">Got a story</span>
+        <span class="contact-hero-line2">worth telling?</span>
+      </h1>
+      <hr class="contact-hero-rule" aria-hidden="true">
+      <button class="scroll-hint" id="scroll-hint" aria-label="Scroll to contact form"></button>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 2 — FORM-FORWARD 2-COLUMN
+         ═══════════════════════════════════════ -->
+    <section class="contact-section" aria-label="Contact details and enquiry form">
+
+      <!-- Left: form (primary action) -->
+      <div class="contact-col" id="contact-form-wrap">
+        <form class="contact-form" id="contact-form" action="https://formspree.io/f/xpwrqzkp" method="POST" novalidate>
+          <input type="hidden" name="_subject" value="New enquiry from webbedfilms.com">
+          <input type="hidden" name="_replyto" id="hidden-replyto">
+          <input type="hidden" name="_next" value="https://www.webbedfilms.com/contact.html?sent=true">
+          <div class="form-field">
+            <label class="form-label" for="f-name">Name</label>
+            <input class="form-input" id="f-name" type="text" name="name" autocomplete="name" placeholder="Your full name">
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="f-email">Email</label>
+            <input class="form-input" id="f-email" type="email" name="email" autocomplete="email" placeholder="you@example.com">
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="f-message">Message</label>
+            <textarea class="form-textarea" id="f-message" name="message" rows="5" placeholder="Tell us about your project..."></textarea>
+          </div>
+          <button class="form-submit" id="form-submit" type="submit">Send Message</button>
+        </form>
+        <div class="contact-success" id="contact-success">
+          <div class="contact-success-icon">&#x2713;</div>
+          <p class="contact-success-heading">We&rsquo;ll be in touch.</p>
+          <p class="contact-success-sub">Your message has been sent.</p>
+        </div>
+      </div>
+
+      <!-- Right: contact details -->
+      <div class="contact-col" id="contact-details">
+        <div class="contact-email-wrap">
+          <a href="mailto:dan@webbedfilms.com" class="contact-email-link">dan@webbedfilms.com</a>
+          <button class="copy-btn" id="copy-email-btn" aria-label="Copy email address to clipboard">
+            Copy
+            <span class="copy-tooltip" id="copy-tooltip" aria-live="polite">Copied!</span>
+          </button>
+        </div>
+
+        <p class="contact-location">Gravesend, UK</p>
+        <p class="contact-coords">51.44&deg;N, 0.37&deg;E</p>
+
+        <nav class="contact-socials" aria-label="Social media">
+          <a href="https://www.instagram.com/webbedfilms/" class="contact-social-link" target="_blank" rel="noopener noreferrer">Instagram</a>
+          <a href="https://www.threads.net/@webbedfilms" class="contact-social-link" target="_blank" rel="noopener noreferrer">Threads</a>
+          <a href="https://x.com/webbedfilms_uk" class="contact-social-link" target="_blank" rel="noopener noreferrer">X</a>
+        </nav>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="site-footer">
+    <div class="footer-bottom">
+      <span class="footer-copy">&copy; 2026 Webbed Films</span>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/webbedfilms/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+        </a>
+        <a href="https://www.threads.net/@webbedfilms" target="_blank" rel="noopener noreferrer" aria-label="Threads">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.848 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.583-1.31-.879-2.367-.883h-.049c-.846 0-1.994.233-2.721 1.32L7.734 9.258c.598-.863 1.37-1.496 2.299-1.882.977-.405 2.07-.592 3.198-.555 1.865.067 3.305.676 4.28 1.81 1.166 1.35 1.606 3.274 1.255 5.64.024.018.049.035.073.053.57.417 1.073.964 1.466 1.618 1.083 1.798 1.019 4.384-.744 6.107-1.978 1.936-4.29 2.772-7.375 2.951z"/>
+          </svg>
+        </a>
+        <a href="https://x.com/webbedfilms_uk" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/nav.js"></script>
+  <script src="js/flourishes.js"></script>
+  <script src="js/daily-quote.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    /* ── Scroll hint ── */
+    var scrollHint = document.getElementById('scroll-hint');
+    if (scrollHint) {
+      scrollHint.addEventListener('click', function () {
+        document.getElementById('contact-form-wrap').scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+
+    /* ── IO observer — columns ── */
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    var formWrap   = document.getElementById('contact-form-wrap');
+    var detailsCol = document.getElementById('contact-details');
+
+    [formWrap, detailsCol].forEach(function (el) {
+      if (el) io.observe(el);
+    });
+
+    /* ── Grain intensification on textarea focus ── */
+    var overlay  = document.getElementById('contact-bg-overlay');
+    var textarea = document.getElementById('f-message');
+
+    if (overlay && textarea) {
+      textarea.addEventListener('focus', function () {
+        overlay.classList.add('is-intense');
+      });
+      textarea.addEventListener('blur', function () {
+        overlay.classList.remove('is-intense');
+      });
+    }
+
+    /* ── Copy email to clipboard ── */
+    var copyBtn     = document.getElementById('copy-email-btn');
+    var copyTooltip = document.getElementById('copy-tooltip');
+    var copyTimer;
+
+    if (copyBtn && copyTooltip) {
+      copyBtn.addEventListener('click', function () {
+        navigator.clipboard.writeText('dan@webbedfilms.com').then(function () {
+          copyTooltip.classList.add('is-visible');
+          clearTimeout(copyTimer);
+          copyTimer = setTimeout(function () {
+            copyTooltip.classList.remove('is-visible');
+          }, 2000);
+        }).catch(function () {
+          /* Fallback: select the email link text */
+          var link = document.querySelector('.contact-email-link');
+          if (link) {
+            var range = document.createRange();
+            range.selectNodeContents(link);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+          }
+        });
+      });
+    }
+
+    /* ── Form validation & submission ── */
+    var form       = document.getElementById('contact-form');
+    var submitBtn  = document.getElementById('form-submit');
+    var nameInput  = document.getElementById('f-name');
+    var emailInput = document.getElementById('f-email');
+    var msgInput   = document.getElementById('f-message');
+
+    function flashError(el) {
+      el.classList.remove('has-error');
+      /* Force reflow so animation re-triggers if already errored */
+      void el.offsetWidth;
+      el.classList.add('has-error');
+      setTimeout(function () { el.classList.remove('has-error'); }, 1400);
+    }
+
+    function isValidEmail(v) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    }
+
+    /* Sync _replyto hidden field with email input */
+    var replyTo = document.getElementById('hidden-replyto');
+    if (emailInput && replyTo) {
+      emailInput.addEventListener('input', function () {
+        replyTo.value = emailInput.value;
+      });
+    }
+
+    /* Remove error state as soon as user starts correcting */
+    [nameInput, emailInput, msgInput].forEach(function (el) {
+      if (el) {
+        el.addEventListener('input', function () {
+          el.classList.remove('has-error');
+        });
+      }
+    });
+
+    /* Show success state if redirected back after send */
+    if (window.location.search.indexOf('sent=true') !== -1) {
+      var successEl = document.getElementById('contact-success');
+      if (form) form.classList.add('is-sent');
+      if (successEl) successEl.classList.add('is-visible');
+    }
+
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        var valid = true;
+
+        if (!nameInput.value.trim()) {
+          e.preventDefault();
+          flashError(nameInput);
+          valid = false;
+        }
+        if (!isValidEmail(emailInput.value.trim())) {
+          e.preventDefault();
+          flashError(emailInput);
+          valid = false;
+        }
+        if (!msgInput.value.trim()) {
+          e.preventDefault();
+          flashError(msgInput);
+          valid = false;
+        }
+
+        if (!valid) { e.preventDefault(); return; }
+
+        /* Form submits natively to FormSubmit.co */
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'SENDING\u2026';
+      });
+    }
+
+  }());
+  </script>
+
+</body>
+</html>

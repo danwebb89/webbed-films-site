@@ -1,0 +1,500 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&family=Permanent+Marker&display=swap');
+
+:root {
+  --bg:           #0a0a0a;
+  --text:         #f0ede8;
+  --accent:       #c8a96e;
+  --color-gold:   #c8a96e;           /* alias used in nav active state */
+  --color-muted:  rgba(240, 237, 232, 0.55);
+  --font-heading: 'Cinzel', serif;
+  --font-display: 'Cormorant Garamond', serif;
+  --font-chalk:   'Permanent Marker', cursive;
+  --font-ui:      'Inter', sans-serif;
+  --header-h:     70px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+button, input, select, textarea { font-family: inherit; }
+
+html {
+  width: 100%;
+  background: var(--bg);
+}
+
+body {
+  width: 100%;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── HEADER ──────────────────────────────────────────── */
+
+#site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--header-h);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.logo-link { display: flex; align-items: center; flex-shrink: 0; }
+.logo      { max-height: 72px; width: auto; display: block; }
+
+/* ─── NAV ─────────────────────────────────────────────── */
+
+.main-nav {
+  display: flex;
+  align-items: center;
+}
+
+.main-nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.main-nav a {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text);
+  text-decoration: none;
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.main-nav a:hover { color: var(--accent); }
+
+/* Current page indicator */
+.main-nav [aria-current="page"] {
+  color: var(--accent);
+  border-bottom-color: var(--color-gold);
+}
+
+/* Dropdown */
+.has-dropdown { position: relative; }
+
+.has-dropdown > a::after {
+  content: ' ▾';
+  font-size: 8px;
+  opacity: 0.5;
+}
+
+/* The "Work" parent should never get the active underline — only sub-items */
+.has-dropdown > a { border-bottom: none; }
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 14px);
+  right: 0;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  padding: 6px 0;
+  min-width: 160px;
+  list-style: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity 0.22s ease, visibility 0.22s ease, transform 0.22s ease;
+}
+
+.has-dropdown:hover .dropdown,
+.has-dropdown:focus-within .dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown li a {
+  display: block;
+  padding: 14px 28px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  border-bottom: none;   /* no underline indicator inside dropdown */
+}
+
+.dropdown li a:hover,
+.dropdown [aria-current="page"] {
+  background: rgba(200, 169, 110, 0.08);
+  color: var(--accent);
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  z-index: 101;
+}
+
+.hamburger span {
+  display: block;
+  width: 22px;
+  height: 1.5px;
+  background: var(--text);
+  transition: background 0.2s ease;
+}
+
+.hamburger:hover span { background: var(--accent); }
+
+/* ─── SOCIAL SIDEBAR ──────────────────────────────────── */
+
+.social-sidebar {
+  position: fixed;
+  left: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.social-sidebar a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-gold);
+  color: #0a0a0a;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.social-sidebar a:hover {
+  background: #f0ede8;
+  color: #0a0a0a;
+  transform: scale(1.15);
+}
+
+.social-sidebar svg { width: 14px; height: 14px; display: block; }
+
+/* ─── MOBILE NAV OVERLAY ──────────────────────────────── */
+
+.mobile-nav {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(10, 10, 10, 0.97);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.mobile-nav.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-nav ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.mobile-nav a {
+  font-family: var(--font-heading);
+  font-size: clamp(28px, 6vw, 40px);
+  font-weight: 300;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: 0.06em;
+  transition: color 0.2s ease;
+}
+
+.mobile-nav a:hover,
+.mobile-nav [aria-current="page"] { color: var(--accent); }
+
+.mobile-nav-close {
+  position: absolute;
+  top: 22px;
+  right: 28px;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 22px;
+  cursor: pointer;
+  padding: 8px;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.mobile-nav-close:hover { color: var(--accent); }
+
+.mobile-nav-section {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: var(--color-gold);
+  text-transform: uppercase;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* ─── FOOTER ──────────────────────────────────────────── */
+
+.site-footer {
+  width: 100%;
+  background: #111;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.footer-bottom {
+  width: 100%;
+  padding: 18px 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-copy {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: rgba(240, 237, 232, 0.55);
+}
+
+.footer-social {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-gold);
+  color: #0a0a0a;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.footer-social a:hover {
+  background: #f0ede8;
+  color: #0a0a0a;
+  transform: scale(1.15);
+}
+
+.footer-social svg { width: 14px; height: 14px; display: block; }
+
+/* ─── INNER PAGE BASE ─────────────────────────────────── */
+
+.page-content {
+  padding-top: var(--header-h);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-hero {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+}
+
+.page-title {
+  font-family: var(--font-heading);
+  font-size: clamp(52px, 8vw, 100px);
+  font-weight: 300;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+/* ─── MOBILE ──────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .main-nav       { display: none; }
+  .hamburger      { display: flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; }
+  .social-sidebar { display: none; }
+  #site-header    { padding: 0 20px; }
+  .footer-bottom  { padding: 16px 20px; }
+  .footer-social a { width: 44px; height: 44px; }
+  .mobile-nav a   { min-height: 44px; display: flex; align-items: center; }
+  .mobile-nav-close { min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   CUSTOM CURSOR
+   wf-cursor-active class added by JS on non-touch devices.
+══════════════════════════════════════════════════════════ */
+
+@media (hover: hover) {
+  .wf-cursor-active * { cursor: none !important; }
+}
+
+#cursor-dot {
+  position: fixed;
+  top: -40px; left: -40px;   /* off-screen until first mousemove */
+  width: 8px; height: 8px;
+  background: var(--color-gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease, opacity 0.15s ease;
+  will-change: left, top, transform;
+}
+
+#cursor-ring {
+  position: fixed;
+  top: -40px; left: -40px;
+  width: 36px; height: 36px;
+  border: 1px solid rgba(200, 169, 110, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--color-gold);
+  transition: width 0.18s ease, height 0.18s ease,
+              border-color 0.18s ease, opacity 0.18s ease;
+  will-change: left, top, width, height;
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   PAGE TRANSITION OVERLAY
+   Injected by JS. Fades in then navigates / fades out on arrive.
+══════════════════════════════════════════════════════════ */
+
+#transition-overlay {
+  position: fixed;
+  inset: 0;
+  background: #0a0a0a;
+  z-index: 99998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+#transition-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ══════════════════════════════════════════════════════════
+   CURRENTLY EDITING STRIP  (homepage only)
+   Static HTML in index.html; styled here.
+══════════════════════════════════════════════════════════ */
+
+#currently-editing {
+  position: fixed;
+  bottom: 28px;
+  right: 32px;
+  z-index: 100;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  line-height: 1.75;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+  user-select: none;
+}
+
+.ce-dot {
+  color: #00ff88;
+  animation: ce-blink 1.2s step-end infinite;
+}
+
+.ce-label  { color: var(--color-muted); }
+
+.ce-project {
+  display: block;
+  color: var(--color-gold);
+  margin-top: 1px;
+  font-size: 15px;
+}
+
+@keyframes ce-blink {
+  0%, 49.9% { opacity: 1; }
+  50%, 100%  { opacity: 0; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   SCROLL TIMELINE LINE  (about.html only)
+   Injected into .bio-text by JS. Line + animated fill bar.
+══════════════════════════════════════════════════════════ */
+
+/* bio-text needs position:relative for the absolute line */
+.bio-text { position: relative; overflow: visible; }
+
+.bio-timeline-line {
+  position: absolute;
+  left: -32px;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.bio-timeline-fill {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 0%;
+  background: var(--color-gold);
+}
+
+@keyframes timeline-pulse {
+  0%   { opacity: 1; filter: brightness(1.0); }
+  40%  { opacity: 1; filter: brightness(2.5); }
+  100% { opacity: 0.55; filter: brightness(1.0); }
+}
+
+.bio-timeline-fill.pulse {
+  animation: timeline-pulse 0.7s ease-out forwards;
+}
+
+/* Hide timeline on narrow viewports where -32px goes off-screen */
+@media (max-width: 768px) {
+  .bio-timeline-line { display: none; }
+}

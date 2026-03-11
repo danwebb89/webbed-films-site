@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Rite of Rosemary — Webbed Films</title>
+  <meta name="description" content="The Rite of Rosemary — a short film written and directed by Daniel Webb.">
+  <meta property="og:title" content="The Rite of Rosemary — Webbed Films">
+  <meta property="og:description" content="A short film written and directed by Daniel Webb.">
+  <meta property="og:image" content="https://www.webbedfilms.com/assets/images/Rite%20of%20Rosemary.jpg">
+  <meta property="og:url" content="https://www.webbedfilms.com/webbed-films/rosemary.html">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       FILM PAGE — webbed-films/rosemary.html
+       ═══════════════════════════════════════════════════════════ */
+
+    :root {
+      --zoom-dur: 1.2s;
+    }
+
+    html { background: #0d0d0d; }
+
+    /* ── Noise background ── */
+    .film-bg-video {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+    .film-bg-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       SECTION 1 — HERO
+    ══════════════════════════════════════════ */
+    .film-hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    #hero-wrapper {
+      position: absolute;
+      inset: 0;
+      transform: translate3d(0, 0, 0);
+      will-change: transform;
+    }
+
+    @keyframes ken-burns {
+      0%   { transform: scale(1); }
+      100% { transform: scale(1.18); }
+    }
+    .film-hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('../assets/images/Rite%20of%20Rosemary.jpg');
+      background-size: cover;
+      background-position: center;
+      background-color: #0d0d0d;
+      animation: ken-burns 45s ease-out forwards;
+      transform-origin: center center;
+    }
+
+    .film-hero-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+    }
+
+    /* ── Staggered entrance ── */
+    @keyframes hero-fade-in {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-stagger {
+      opacity: 0;
+      animation: hero-fade-in 0.8s ease forwards;
+    }
+    .hero-stagger--1 { animation-delay: 0.3s; }
+    .hero-stagger--2 { animation-delay: 0.5s; }
+    .hero-stagger--3 { animation-delay: 0.7s; }
+    .hero-stagger--4 { animation-delay: 0.9s; }
+    .hero-stagger--5 { animation-delay: 1.1s; }
+
+    .film-hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 60px;
+      transition: opacity 0.35s ease;
+    }
+
+    .film-hero-byline {
+      font-family: var(--font-ui);
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      color: var(--color-gold);
+      text-transform: uppercase;
+      margin: 0 0 16px;
+    }
+
+    .film-hero-title {
+      font-family: var(--font-display);
+      font-size: 80px;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      color: var(--text);
+      line-height: 1;
+      margin: 0;
+      text-transform: uppercase;
+    }
+
+    .film-hero-cast {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--color-muted);
+      text-transform: uppercase;
+      margin: 12px 0 0;
+    }
+
+    .film-hero-play {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .play-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 1px solid rgba(240,237,232,0.6);
+      background: none;
+      color: var(--text);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 3px;
+      cursor: pointer;
+      transition: border-color 0.25s ease, color 0.25s ease;
+      flex-shrink: 0;
+    }
+    .play-circle:hover {
+      border-color: var(--color-gold);
+      color: var(--color-gold);
+    }
+
+    .play-label {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--color-muted);
+      text-transform: uppercase;
+    }
+
+    /* ── Film video overlay (CRT zoom target) ── */
+    #film-overlay {
+      position: fixed; inset: 0;
+      background: #000;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.45s ease;
+    }
+    #film-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    #film-overlay video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    #film-close-btn {
+      position: absolute;
+      top: 24px; right: 28px;
+      width: 44px; height: 44px;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 50%;
+      background: rgba(0,0,0,0.55);
+      color: rgba(255,255,255,0.78);
+      font-size: 17px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      opacity: 0;
+      transition: opacity 0.55s ease 0.5s, background 0.2s ease, border-color 0.2s ease;
+      z-index: 501;
+    }
+    #film-overlay.active #film-close-btn { opacity: 1; }
+    #film-close-btn:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.55);
+      color: #fff;
+    }
+
+    /* Centred hero play button */
+    .film-hero-play--centre {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      transition: opacity 0.35s ease;
+    }
+    .film-hero-play--centre .play-circle {
+      width: 100px;
+      height: 100px;
+      font-size: 30px;
+      border-color: rgba(240,237,232,0.7);
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .film-hero-play--centre .play-label {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+    }
+
+    @keyframes glow-breathe {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(200,169,110,0), 0 0 0 0 rgba(200,169,110,0); }
+      50%      { box-shadow: 0 0 18px 4px rgba(200,169,110,0.15), 0 0 40px 8px rgba(200,169,110,0.06); }
+    }
+    .play-circle {
+      animation: glow-breathe 3.5s ease-in-out infinite;
+    }
+
+    /* ══════════════════════════════════════════
+       VIDEO EXTRAS
+    ══════════════════════════════════════════ */
+    .film-videos-section {
+      padding: 60px 40px;
+      max-width: 1000px;
+      margin: 0 auto;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .film-videos-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .film-video-card {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 2px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.3s ease, transform 0.3s ease;
+    }
+    .film-video-card:hover {
+      border-color: var(--color-gold);
+      transform: scale(1.02);
+    }
+    .film-video-card video {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+    .film-video-card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(transparent 40%, rgba(0,0,0,0.75) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 16px;
+    }
+    .film-video-card-title {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      color: var(--text);
+      letter-spacing: 0.05em;
+      margin: 0;
+    }
+    .film-video-card-sub {
+      font-family: var(--font-ui);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin: 4px 0 0;
+    }
+    .film-video-card-play {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.5);
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      color: var(--text);
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 3px;
+      pointer-events: none;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .film-video-card:hover .film-video-card-play {
+      border-color: var(--color-gold);
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    /* Video extras overlay */
+    #extras-overlay {
+      position: fixed; inset: 0;
+      background: #000;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+    #extras-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    #extras-overlay video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    #extras-close-btn {
+      position: absolute;
+      top: 24px; right: 28px;
+      width: 44px; height: 44px;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 50%;
+      background: rgba(0,0,0,0.55);
+      color: rgba(255,255,255,0.78);
+      font-size: 17px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      opacity: 0;
+      transition: opacity 0.55s ease 0.5s, background 0.2s ease, border-color 0.2s ease;
+      z-index: 501;
+    }
+    #extras-overlay.active #extras-close-btn { opacity: 1; }
+    #extras-close-btn:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.55);
+      color: #fff;
+    }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 32px;
+      right: 40px;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      transition: opacity 0.35s ease;
+    }
+    .scroll-indicator span {
+      font-family: var(--font-ui);
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      color: var(--color-muted);
+      text-transform: uppercase;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .scroll-line::after {
+      content: '';
+      position: absolute;
+      top: -100%;
+      left: 0;
+      width: 1px;
+      height: 100%;
+      background: var(--color-muted);
+      animation: scroll-pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes scroll-pulse {
+      0%   { top: -100%; }
+      50%  { top: 0; }
+      100% { top: 100%; }
+    }
+
+    /* ══════════════════════════════════════════
+       SYNOPSIS — bottom-right overlay on hero
+    ══════════════════════════════════════════ */
+    .film-synopsis-overlay {
+      position: absolute;
+      bottom: 60px;
+      right: 60px;
+      z-index: 2;
+      max-width: 380px;
+      padding: 20px 24px;
+      background: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 4px;
+      transition: opacity 0.35s ease;
+    }
+
+    .film-section-label {
+      font-family: var(--font-ui);
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      color: var(--color-gold);
+      text-transform: uppercase;
+      margin: 0 0 14px;
+    }
+
+    .film-synopsis-text {
+      font-family: var(--font-ui);
+      font-size: 14px;
+      line-height: 1.8;
+      color: rgba(240, 237, 232, 0.85);
+      margin: 0;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+    }
+
+    /* ══════════════════════════════════════════
+       SECTION 3 — BEHIND THE SCENES (filmstrip)
+    ══════════════════════════════════════════ */
+    .film-bts-section {
+      padding: 60px 40px;
+      width: 100%;
+    }
+
+    .film-bts-strip {
+      display: flex;
+      overflow-x: auto;
+      gap: 12px;
+      padding: 8px 0 16px;
+      cursor: grab;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .film-bts-strip::-webkit-scrollbar { display: none; }
+    .film-bts-strip.is-dragging { cursor: grabbing; }
+
+    .bts-photo {
+      flex-shrink: 0;
+      height: 280px;
+      width: auto;
+      min-width: 200px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 2px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .bts-photo:hover {
+      transform: scale(1.03);
+      border-color: var(--color-gold);
+    }
+    .bts-photo img {
+      height: 100%;
+      width: auto;
+      display: block;
+      object-fit: cover;
+    }
+    .bts-photo span {
+      font-family: var(--font-ui);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      color: rgba(240,237,232,0.2);
+      text-transform: uppercase;
+    }
+
+    /* ══════════════════════════════════════════
+       SECTION 4 — SOUNDTRACK (streaming audio)
+    ══════════════════════════════════════════ */
+    .film-soundtrack-section {
+      padding: 60px 40px;
+      max-width: 800px;
+      margin: 0 auto;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .film-soundtrack-art {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .film-soundtrack-art img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 2px;
+    }
+    .film-soundtrack-art-info {
+      font-family: var(--font-ui);
+    }
+    .film-soundtrack-art-title {
+      font-size: 16px;
+      color: var(--text);
+      letter-spacing: 0.05em;
+      margin: 0 0 4px;
+    }
+    .film-soundtrack-art-sub {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--color-muted);
+      text-transform: uppercase;
+      margin: 0;
+    }
+
+    .film-track-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 8px;
+      margin: 0 -8px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      border-radius: 4px;
+      transition: background 0.35s ease;
+    }
+    .film-track-row.is-playing {
+      background: rgba(200,169,110,0.045);
+    }
+    .film-track-row.is-playing .film-track-title {
+      color: var(--color-gold);
+    }
+    .film-track-row.is-playing .film-track-num {
+      color: var(--color-gold);
+    }
+
+    .film-track-num {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      color: var(--color-muted);
+      width: 20px;
+      flex-shrink: 0;
+      text-align: right;
+    }
+
+    .film-track-play {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: none;
+      color: var(--text);
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 2px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: border-color 0.2s ease, color 0.2s ease;
+    }
+    .film-track-play:hover {
+      border-color: var(--color-gold);
+      color: var(--color-gold);
+    }
+    .film-track-play.is-playing {
+      border-color: var(--color-gold);
+      color: var(--color-gold);
+      padding-left: 0;
+    }
+
+    .film-track-title {
+      font-family: var(--font-ui);
+      font-size: 14px;
+      color: var(--text);
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .film-track-progress {
+      flex: 1;
+      height: 2px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 1px;
+      cursor: pointer;
+      position: relative;
+      min-width: 60px;
+    }
+    .film-track-progress-fill {
+      position: absolute;
+      top: 0; left: 0;
+      height: 100%;
+      background: var(--color-gold);
+      border-radius: 1px;
+      width: 0%;
+      pointer-events: none;
+    }
+
+    .film-track-time {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      color: var(--color-muted);
+      flex-shrink: 0;
+      min-width: 70px;
+      text-align: right;
+    }
+
+    /* ══════════════════════════════════════════
+       FOOTER ROW
+    ══════════════════════════════════════════ */
+    .film-footer-row {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 24px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .film-back-link {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--color-muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.2s ease;
+    }
+    .film-back-link:hover {
+      color: var(--color-gold);
+    }
+    .film-footer-copy {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--color-muted);
+      text-transform: uppercase;
+    }
+
+    /* ══════════════════════════════════════════
+       BTS LIGHTBOX
+    ══════════════════════════════════════════ */
+    .bts-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.93);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .bts-lightbox.is-open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .bts-lightbox .lb-close {
+      position: fixed;
+      top: 28px;
+      right: 36px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 8px;
+      transition: color 0.2s ease;
+      z-index: 10000;
+    }
+    .bts-lightbox .lb-close:hover { color: #fff; }
+    .bts-lightbox .lb-prev,
+    .bts-lightbox .lb-next {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.35);
+      font-size: 32px;
+      cursor: pointer;
+      padding: 20px 16px;
+      transition: color 0.2s ease;
+      z-index: 10000;
+      line-height: 1;
+    }
+    .bts-lightbox .lb-prev:hover,
+    .bts-lightbox .lb-next:hover { color: #fff; }
+    .bts-lightbox .lb-prev { left: 16px; }
+    .bts-lightbox .lb-next { right: 16px; }
+    .bts-lightbox .lb-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .bts-lightbox .lb-photo {
+      width: 80vw;
+      max-width: 960px;
+      aspect-ratio: 3 / 2;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-ui);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--color-muted);
+      text-transform: uppercase;
+      overflow: hidden;
+    }
+    .bts-lightbox .lb-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .bts-lightbox .lb-counter {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      color: var(--color-muted);
+    }
+
+    /* ══════════════════════════════════════════
+       FLOURISHES
+    ══════════════════════════════════════════ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1),
+                  transform 0.8s cubic-bezier(0.16,1,0.3,1);
+    }
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .film-section-label {
+      position: relative;
+      display: inline-block;
+      padding-bottom: 6px;
+    }
+    .film-section-label::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 1px;
+      width: 0;
+      background: var(--color-gold);
+      transition: width 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s;
+    }
+    .film-section-label.is-visible::after {
+      width: 100%;
+    }
+
+    .film-bts-strip {
+      -webkit-mask-image: linear-gradient(to right, transparent, black 60px, black calc(100% - 60px), transparent);
+      mask-image: linear-gradient(to right, transparent, black 60px, black calc(100% - 60px), transparent);
+    }
+
+    /* BTS NAV ARROWS */
+    .film-bts-wrap {
+      position: relative;
+    }
+    .bts-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 4;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(13,13,13,0.75);
+      color: var(--text);
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease, opacity 0.25s ease;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      padding: 0;
+    }
+    .bts-arrow:hover {
+      border-color: var(--color-gold);
+      background: rgba(13,13,13,0.9);
+      color: var(--color-gold);
+    }
+    .bts-arrow.is-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .bts-arrow--left  { left: 12px; }
+    .bts-arrow--right { right: 12px; }
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      .film-hero-title { font-size: 40px; }
+      .film-hero-content { padding: 32px 24px; }
+      .film-synopsis-overlay { bottom: auto; top: 60px; right: 24px; left: 24px; max-width: none; }
+      .film-synopsis-text { font-size: 12px; }
+      .film-bts-section { padding: 40px 24px; }
+      .bts-photo { height: 200px; min-width: 150px; }
+      .film-soundtrack-section { padding: 40px 24px; }
+      .film-hero-play--centre .play-circle { width: 72px; height: 72px; font-size: 22px; }
+      .film-videos-grid { grid-template-columns: repeat(2, 1fr); }
+      .film-videos-section { padding: 40px 24px; }
+      .film-track-row { gap: 8px; }
+      .film-track-title { font-size: 12px; }
+      .film-track-progress { min-width: 40px; }
+      .film-footer-row { padding: 20px 24px; }
+      .scroll-indicator { display: none; }
+      .bts-arrow { width: 32px; height: 32px; font-size: 13px; }
+      .bts-arrow--left { left: 6px; }
+      .bts-arrow--right { right: 6px; }
+      .bts-lightbox .lb-photo { width: 94vw; }
+      .film-soundtrack-art img { width: 72px; height: 72px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Noise background -->
+  <video class="film-bg-video" autoplay muted loop playsinline aria-hidden="true">
+    <source src="../assets/video/noise%20background.mp4" type="video/mp4">
+  </video>
+  <div class="film-bg-overlay"></div>
+
+  <!-- Header -->
+  <header id="site-header">
+    <a href="../index.html" class="logo-link">
+      <img src="../assets/images/logo.png" alt="Webbed Films" class="logo" onerror="this.style.display='none'">
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <ul>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../the-suite.html">The Suite</a></li>
+        <li class="has-dropdown">
+          <a href="../work.html">Work</a>
+          <ul class="dropdown">
+            <li><a href="../documentary.html">Documentary</a></li>
+            <li><a href="../corporate.html">Corporate</a></li>
+            <li><a href="../features.html">Features</a></li>
+            <li><a href="../shorts.html">Shorts</a></li>
+          </ul>
+        </li>
+        <li class="has-dropdown">
+          <a href="../webbed-films.html">Originals</a>
+          <ul class="dropdown">
+            <li><a href="rosemary.html" aria-current="page">The Rite of Rosemary</a></li>
+            <li><a href="ngs.html">NGS</a></li>
+            <li><a href="blackout.html">Blackout</a></li>
+            <li><a href="christmas-claret.html">A Christmas Claret</a></li>
+          </ul>
+        </li>
+        <li><a href="https://www.revelstokefilms.com" target="_blank" rel="noopener noreferrer">Revelstoke</a></li>
+        <li><a href="https://watch.webbedfilms.com" target="_blank" rel="noopener noreferrer">Watch</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <!-- Mobile nav overlay -->
+  <div class="mobile-nav" id="mobile-nav" role="dialog" aria-label="Navigation menu">
+    <button class="mobile-nav-close" id="mobile-nav-close" aria-label="Close menu">&#x2715;</button>
+    <ul>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../the-suite.html">The Suite</a></li>
+      <li><a href="../work.html">Work</a></li>
+      <li><a href="../documentary.html">Documentary</a></li>
+      <li><a href="../corporate.html">Corporate</a></li>
+      <li><a href="../features.html">Features</a></li>
+      <li><a href="../shorts.html">Shorts</a></li>
+      <li><span class="mobile-nav-section">Originals</span></li>
+      <li><a href="rosemary.html" aria-current="page">The Rite of Rosemary</a></li>
+      <li><a href="ngs.html">NGS</a></li>
+      <li><a href="blackout.html">Blackout</a></li>
+      <li><a href="christmas-claret.html">A Christmas Claret</a></li>
+      <li><a href="https://www.revelstokefilms.com" target="_blank" rel="noopener noreferrer">Revelstoke</a></li>
+        <li><a href="https://watch.webbedfilms.com" target="_blank" rel="noopener noreferrer">Watch</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </div>
+
+  <main>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 1 — HERO
+    ═══════════════════════════════════════ -->
+    <section class="film-hero">
+      <div id="hero-wrapper">
+        <div class="film-hero-bg"></div>
+        <div class="film-hero-gradient"></div>
+      </div>
+
+      <div class="film-hero-play--centre hero-stagger hero-stagger--3" id="hero-play-centre">
+        <button class="play-circle" id="play-film-btn" aria-label="Watch film">&#9654;</button>
+        <span class="play-label">Watch Film</span>
+      </div>
+
+      <div class="film-hero-content" id="hero-content">
+        <p class="film-hero-byline hero-stagger hero-stagger--1">A Film by Daniel Webb</p>
+        <h1 class="film-hero-title hero-stagger hero-stagger--2">The Rite of Rosemary</h1>
+        <p class="film-hero-cast hero-stagger hero-stagger--3">Bill Thomas &middot; Guy Barnes</p>
+      </div>
+
+      <div class="film-synopsis-overlay hero-stagger hero-stagger--5" id="synopsis-overlay">
+        <p class="film-section-label">Synopsis</p>
+        <p class="film-synopsis-text">In the depths of the English countryside, a young girl vanishes without a trace. As the local constable investigates, he uncovers a web of secrets tied to an ancient rite that the village has practised for generations. What begins as a missing person case soon reveals something far darker lurking beneath the surface.</p>
+      </div>
+
+      <div class="scroll-indicator" id="scroll-indicator" aria-hidden="true">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 3 — BEHIND THE SCENES (filmstrip)
+    ═══════════════════════════════════════ -->
+    <section class="film-bts-section reveal">
+      <p class="film-section-label">Behind the Scenes</p>
+
+      <div class="film-bts-wrap">
+      <button class="bts-arrow bts-arrow--left is-hidden" id="bts-arrow-left" aria-label="Scroll left">&#8249;</button>
+      <button class="bts-arrow bts-arrow--right" id="bts-arrow-right" aria-label="Scroll right">&#8250;</button>
+      <div class="film-bts-strip" id="bts-strip" aria-label="Behind the scenes photos">
+        <div class="bts-photo" data-index="0" tabindex="0" role="button" aria-label="Open BTS photo 1">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_033.jpg" alt="Behind the scenes 1" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="1" tabindex="0" role="button" aria-label="Open BTS photo 2">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_041.jpg" alt="Behind the scenes 2" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="2" tabindex="0" role="button" aria-label="Open BTS photo 3">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_045.jpg" alt="Behind the scenes 3" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="3" tabindex="0" role="button" aria-label="Open BTS photo 4">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_048.jpg" alt="Behind the scenes 4" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="4" tabindex="0" role="button" aria-label="Open BTS photo 5">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_053.jpg" alt="Behind the scenes 5" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="5" tabindex="0" role="button" aria-label="Open BTS photo 6">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_065.jpg" alt="Behind the scenes 6" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="6" tabindex="0" role="button" aria-label="Open BTS photo 7">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_073.jpg" alt="Behind the scenes 7" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="7" tabindex="0" role="button" aria-label="Open BTS photo 8">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_097.jpg" alt="Behind the scenes 8" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="8" tabindex="0" role="button" aria-label="Open BTS photo 9">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_105.jpg" alt="Behind the scenes 9" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="9" tabindex="0" role="button" aria-label="Open BTS photo 10">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_114.jpg" alt="Behind the scenes 10" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="10" tabindex="0" role="button" aria-label="Open BTS photo 11">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_128.jpg" alt="Behind the scenes 11" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="11" tabindex="0" role="button" aria-label="Open BTS photo 12">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_140.jpg" alt="Behind the scenes 12" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="12" tabindex="0" role="button" aria-label="Open BTS photo 13">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_155.jpg" alt="Behind the scenes 13" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="13" tabindex="0" role="button" aria-label="Open BTS photo 14">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_166.jpg" alt="Behind the scenes 14" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="14" tabindex="0" role="button" aria-label="Open BTS photo 15">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_176.jpg" alt="Behind the scenes 15" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="15" tabindex="0" role="button" aria-label="Open BTS photo 16">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_192.jpg" alt="Behind the scenes 16" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="16" tabindex="0" role="button" aria-label="Open BTS photo 17">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_208.jpg" alt="Behind the scenes 17" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="17" tabindex="0" role="button" aria-label="Open BTS photo 18">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_233.jpg" alt="Behind the scenes 18" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="18" tabindex="0" role="button" aria-label="Open BTS photo 19">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_266.jpg" alt="Behind the scenes 19" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="19" tabindex="0" role="button" aria-label="Open BTS photo 20">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_282.jpg" alt="Behind the scenes 20" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="20" tabindex="0" role="button" aria-label="Open BTS photo 21">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_338.jpg" alt="Behind the scenes 21" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="21" tabindex="0" role="button" aria-label="Open BTS photo 22">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_359.jpg" alt="Behind the scenes 22" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="22" tabindex="0" role="button" aria-label="Open BTS photo 23">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_385.jpg" alt="Behind the scenes 23" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="23" tabindex="0" role="button" aria-label="Open BTS photo 24">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_488.jpg" alt="Behind the scenes 24" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="24" tabindex="0" role="button" aria-label="Open BTS photo 25">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_1_503.jpg" alt="Behind the scenes 25" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="25" tabindex="0" role="button" aria-label="Open BTS photo 26">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_2_046.jpg" alt="Behind the scenes 26" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="26" tabindex="0" role="button" aria-label="Open BTS photo 27">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_2_104.jpg" alt="Behind the scenes 27" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="27" tabindex="0" role="button" aria-label="Open BTS photo 28">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_2_150.jpg" alt="Behind the scenes 28" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="28" tabindex="0" role="button" aria-label="Open BTS photo 29">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_2_173.jpg" alt="Behind the scenes 29" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="29" tabindex="0" role="button" aria-label="Open BTS photo 30">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_Canon_2_201.jpg" alt="Behind the scenes 30" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="30" tabindex="0" role="button" aria-label="Open BTS photo 31">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_fuji_1_008.jpg" alt="Behind the scenes 31" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="31" tabindex="0" role="button" aria-label="Open BTS photo 32">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_fuji_1_079.jpg" alt="Behind the scenes 32" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="32" tabindex="0" role="button" aria-label="Open BTS photo 33">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_fuji_1_116.jpg" alt="Behind the scenes 33" loading="lazy">
+        </div>
+        <div class="bts-photo" data-index="33" tabindex="0" role="button" aria-label="Open BTS photo 34">
+          <img src="../assets/images/riteofrosemary-bts/Rit_of_rosemary_fuji_1_160.jpg" alt="Behind the scenes 34" loading="lazy">
+        </div>
+      </div>
+      </div><!-- /.film-bts-wrap -->
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         SECTION — VIDEO EXTRAS
+    ═══════════════════════════════════════ -->
+    <section class="film-videos-section reveal">
+      <div class="film-videos-grid">
+        <div class="film-video-card" data-video-src="../assets/video/_the_rite_of_rosemary__teaser_trailer%20(1080p).mp4">
+          <video muted loop playsinline preload="none">
+            <source src="../assets/video/_the_rite_of_rosemary__teaser_trailer%20(1080p).mp4" type="video/mp4">
+          </video>
+          <div class="film-video-card-overlay">
+            <p class="film-video-card-title">Teaser Trailer</p>
+          </div>
+          <div class="film-video-card-play">&#9654;</div>
+        </div>
+        <div class="film-video-card" data-video-src="../assets/video/_the_rite_of_rosemary__final_trailer%20(720p).mp4">
+          <video muted loop playsinline preload="none">
+            <source src="../assets/video/_the_rite_of_rosemary__final_trailer%20(720p).mp4" type="video/mp4">
+          </video>
+          <div class="film-video-card-overlay">
+            <p class="film-video-card-title">Final Trailer</p>
+          </div>
+          <div class="film-video-card-play">&#9654;</div>
+        </div>
+        <div class="film-video-card" data-video-src="../assets/video/the_making_of__the_rite_of_rosemary_%20(720p).mp4">
+          <video muted loop playsinline preload="none">
+            <source src="../assets/video/the_making_of__the_rite_of_rosemary_%20(720p).mp4" type="video/mp4">
+          </video>
+          <div class="film-video-card-overlay">
+            <p class="film-video-card-title">The Making Of</p>
+          </div>
+          <div class="film-video-card-play">&#9654;</div>
+        </div>
+        <div class="film-video-card" data-video-src="../assets/video/_the_rite_of_rosemary__premiere_q_and_a%20(720p).mp4">
+          <video muted loop playsinline preload="none">
+            <source src="../assets/video/_the_rite_of_rosemary__premiere_q_and_a%20(720p).mp4" type="video/mp4">
+          </video>
+          <div class="film-video-card-overlay">
+            <p class="film-video-card-title">Premiere Q&amp;A</p>
+          </div>
+          <div class="film-video-card-play">&#9654;</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         SECTION — SOUNDTRACK (streaming audio)
+    ═══════════════════════════════════════ -->
+    <section class="film-soundtrack-section reveal">
+      <p class="film-section-label">Soundtrack</p>
+
+
+      <!-- Track 1 -->
+      <div class="film-track-row" data-track="0">
+        <span class="film-track-num">01</span>
+        <button class="film-track-play" aria-label="Play The Girl in the Woods">&#9654;</button>
+        <span class="film-track-title">The Girl in the Woods</span>
+        <div class="film-track-progress">
+          <div class="film-track-progress-fill"></div>
+        </div>
+        <span class="film-track-time">0:00 / 0:00</span>
+        <audio preload="none">
+          <source src="../assets/audio/The%20Rite%20of%20Rosemary%20Soundtrack/1.%20The%20Girl%20in%20the%20Woods.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <!-- Track 2 -->
+      <div class="film-track-row" data-track="1">
+        <span class="film-track-num">02</span>
+        <button class="film-track-play" aria-label="Play Jack">&#9654;</button>
+        <span class="film-track-title">Jack</span>
+        <div class="film-track-progress">
+          <div class="film-track-progress-fill"></div>
+        </div>
+        <span class="film-track-time">0:00 / 0:00</span>
+        <audio preload="none">
+          <source src="../assets/audio/The%20Rite%20of%20Rosemary%20Soundtrack/2.%20Jack.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <!-- Track 3 -->
+      <div class="film-track-row" data-track="2">
+        <span class="film-track-num">03</span>
+        <button class="film-track-play" aria-label="Play Constable Merrifield">&#9654;</button>
+        <span class="film-track-title">Constable Merrifield</span>
+        <div class="film-track-progress">
+          <div class="film-track-progress-fill"></div>
+        </div>
+        <span class="film-track-time">0:00 / 0:00</span>
+        <audio preload="none">
+          <source src="../assets/audio/The%20Rite%20of%20Rosemary%20Soundtrack/3.%20Constable%20Merrifield.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <!-- Track 4 -->
+      <div class="film-track-row" data-track="3">
+        <span class="film-track-num">04</span>
+        <button class="film-track-play" aria-label="Play Reunion">&#9654;</button>
+        <span class="film-track-title">Reunion</span>
+        <div class="film-track-progress">
+          <div class="film-track-progress-fill"></div>
+        </div>
+        <span class="film-track-time">0:00 / 0:00</span>
+        <audio preload="none">
+          <source src="../assets/audio/The%20Rite%20of%20Rosemary%20Soundtrack/4.%20Reunion.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <!-- Track 5 -->
+      <div class="film-track-row" data-track="4">
+        <span class="film-track-num">05</span>
+        <button class="film-track-play" aria-label="Play Thomas">&#9654;</button>
+        <span class="film-track-title">Thomas</span>
+        <div class="film-track-progress">
+          <div class="film-track-progress-fill"></div>
+        </div>
+        <span class="film-track-time">0:00 / 0:00</span>
+        <audio preload="none">
+          <source src="../assets/audio/The%20Rite%20of%20Rosemary%20Soundtrack/5.%20Thomas.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <!-- Track 6 -->
+      <div class="film-track-row" data-track="5">
+        <span class="film-track-num">06</span>
+        <button class="film-track-play" aria-label="Play The Shed">&#9654;</button>
+        <span class="film-track-title">The Shed</span>
+        <div class="film-track-progress">
+          <div class="film-track-progress-fill"></div>
+        </div>
+        <span class="film-track-time">0:00 / 0:00</span>
+        <audio preload="none">
+          <source src="../assets/audio/The%20Rite%20of%20Rosemary%20Soundtrack/6.%20The%20Shed.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <!-- Track 7 -->
+      <div class="film-track-row" data-track="6">
+        <span class="film-track-num">07</span>
+        <button class="film-track-play" aria-label="Play Lotti">&#9654;</button>
+        <span class="film-track-title">Lotti</span>
+        <div class="film-track-progress">
+          <div class="film-track-progress-fill"></div>
+        </div>
+        <span class="film-track-time">0:00 / 0:00</span>
+        <audio preload="none">
+          <source src="../assets/audio/The%20Rite%20of%20Rosemary%20Soundtrack/7.%20Lotti.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <!-- Track 8 -->
+      <div class="film-track-row" data-track="7">
+        <span class="film-track-num">08</span>
+        <button class="film-track-play" aria-label="Play The Candle Vigil">&#9654;</button>
+        <span class="film-track-title">The Candle Vigil</span>
+        <div class="film-track-progress">
+          <div class="film-track-progress-fill"></div>
+        </div>
+        <span class="film-track-time">0:00 / 0:00</span>
+        <audio preload="none">
+          <source src="../assets/audio/The%20Rite%20of%20Rosemary%20Soundtrack/8%20The%20Candle%20Vigil.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <!-- Track 9 -->
+      <div class="film-track-row" data-track="8">
+        <span class="film-track-num">09</span>
+        <button class="film-track-play" aria-label="Play The Rite of Rosemary">&#9654;</button>
+        <span class="film-track-title">The Rite of Rosemary</span>
+        <div class="film-track-progress">
+          <div class="film-track-progress-fill"></div>
+        </div>
+        <span class="film-track-time">0:00 / 0:00</span>
+        <audio preload="none">
+          <source src="../assets/audio/The%20Rite%20of%20Rosemary%20Soundtrack/9.%20The%20Rite%20of%20Rosemary.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════
+       FOOTER ROW
+  ═══════════════════════════════════════ -->
+  <div class="film-footer-row">
+    <a href="../webbed-films.html" class="film-back-link">&larr; Back to Originals</a>
+    <span class="film-footer-copy">Webbed Films &middot; &copy; 2026</span>
+  </div>
+
+  <!-- Film video overlay (CRT zoom target) -->
+  <div id="film-overlay" role="dialog" aria-modal="true" aria-label="Film player">
+    <video id="film-video" playsinline controls preload="none">
+      <source src="../assets/video/theriteofrosemary.mp4" type="video/mp4">
+    </video>
+    <button id="film-close-btn" title="Close (Esc)">&#x2715;</button>
+  </div>
+
+  <!-- Video extras overlay -->
+  <div id="extras-overlay" role="dialog" aria-modal="true" aria-label="Video player">
+    <video id="extras-video" playsinline controls preload="none"></video>
+    <button id="extras-close-btn" title="Close (Esc)">&#x2715;</button>
+  </div>
+
+  <!-- BTS lightbox -->
+  <div class="bts-lightbox" id="bts-lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+    <button class="lb-close" id="bts-lb-close" aria-label="Close lightbox">&#x2715;</button>
+    <button class="lb-prev" id="bts-lb-prev" aria-label="Previous photo">&#x2039;</button>
+    <button class="lb-next" id="bts-lb-next" aria-label="Next photo">&#x203a;</button>
+    <div class="lb-inner">
+      <div class="lb-photo" id="bts-lb-photo">BTS PHOTO 1</div>
+      <p class="lb-counter" id="bts-lb-counter">1 / 34</p>
+    </div>
+  </div>
+
+  <script src="../js/nav.js"></script>
+  <script src="../js/flourishes.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    /* ═══════════════════════════════════════════
+       CRT ZOOM — Hero play button
+    ═══════════════════════════════════════════ */
+    var heroWrapper    = document.getElementById('hero-wrapper');
+    var heroContent    = document.getElementById('hero-content');
+    var heroPlayCentre = document.getElementById('hero-play-centre');
+    var synopsisOvl    = document.getElementById('synopsis-overlay');
+    var scrollInd      = document.getElementById('scroll-indicator');
+    var filmOverlay    = document.getElementById('film-overlay');
+    var filmVideo      = document.getElementById('film-video');
+    var filmCloseBtn   = document.getElementById('film-close-btn');
+    var playBtn        = document.getElementById('play-film-btn');
+
+    var zoomState = 'idle';
+
+    function getZoomDur() {
+      var raw = getComputedStyle(document.documentElement).getPropertyValue('--zoom-dur').trim();
+      return raw.endsWith('ms') ? parseFloat(raw) : parseFloat(raw) * 1000;
+    }
+
+    function zoomParams() {
+      var vw = window.innerWidth;
+      var vh = window.innerHeight;
+      var originX = vw / 2;
+      var originY = vh / 2;
+      var scale = 3.5;
+      return { scale: scale, originX: originX, originY: originY, tx: 0, ty: 0 };
+    }
+
+    playBtn.addEventListener('click', function () {
+      if (zoomState !== 'idle') return;
+      zoomState = 'opening';
+
+      var zoomMs = getZoomDur();
+
+      heroContent.style.opacity = '0';
+      heroPlayCentre.style.opacity = '0';
+      synopsisOvl.style.opacity = '0';
+      scrollInd.style.opacity = '0';
+
+      var p = zoomParams();
+      heroWrapper.style.transformOrigin = p.originX + 'px ' + p.originY + 'px';
+      heroWrapper.style.transition = 'transform ' + zoomMs + 'ms cubic-bezier(0.76,0,0.24,1)';
+      heroWrapper.style.transform = 'translate3d(' + p.tx + 'px,' + p.ty + 'px,0) scale(' + p.scale + ')';
+
+      setTimeout(function () {
+        filmOverlay.classList.add('active');
+        filmVideo.play().catch(function () {});
+        document.body.style.overflow = 'hidden';
+        zoomState = 'open';
+        if (filmOverlay.requestFullscreen) filmOverlay.requestFullscreen().catch(function () {});
+      }, zoomMs * 0.68);
+    });
+
+    function closeFilm() {
+      if (zoomState !== 'open') return;
+      zoomState = 'closing';
+
+      var zoomMs = getZoomDur();
+
+      if (document.fullscreenElement) document.exitFullscreen().catch(function () {});
+      filmVideo.pause();
+      filmOverlay.classList.remove('active');
+
+      setTimeout(function () {
+        heroWrapper.style.transition = 'transform ' + zoomMs + 'ms cubic-bezier(0.76,0,0.24,1)';
+        heroWrapper.style.transform = 'translate3d(0,0,0)';
+
+        setTimeout(function () {
+          heroContent.style.opacity = '';
+          heroPlayCentre.style.opacity = '';
+          synopsisOvl.style.opacity = '';
+          scrollInd.style.opacity = '';
+          filmVideo.currentTime = 0;
+          document.body.style.overflow = '';
+          zoomState = 'idle';
+        }, zoomMs);
+      }, 300);
+    }
+
+    filmCloseBtn.addEventListener('click', function (e) { e.stopPropagation(); closeFilm(); });
+    filmOverlay.addEventListener('click', function (e) { if (e.target === filmOverlay) closeFilm(); });
+    filmVideo.addEventListener('ended', function () { closeFilm(); });
+    document.addEventListener('fullscreenchange', function () {
+      if (!document.fullscreenElement && zoomState === 'open') closeFilm();
+    });
+
+    /* ═══════════════════════════════════════════
+       VIDEO EXTRAS — Card hover & play
+    ═══════════════════════════════════════════ */
+    var extrasOverlay = document.getElementById('extras-overlay');
+    var extrasVideo   = document.getElementById('extras-video');
+    var extrasClose   = document.getElementById('extras-close-btn');
+
+    document.querySelectorAll('.film-video-card').forEach(function (card) {
+      var preview = card.querySelector('video');
+
+      card.addEventListener('mouseenter', function () {
+        preview.play().catch(function () {});
+      });
+      card.addEventListener('mouseleave', function () {
+        preview.pause();
+        preview.currentTime = 0;
+      });
+
+      card.addEventListener('click', function () {
+        var src = card.getAttribute('data-video-src');
+        extrasVideo.src = src;
+        extrasOverlay.classList.add('active');
+        extrasVideo.play().catch(function () {});
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    function closeExtras() {
+      extrasVideo.pause();
+      extrasOverlay.classList.remove('active');
+      extrasVideo.src = '';
+      document.body.style.overflow = '';
+    }
+
+    extrasClose.addEventListener('click', function (e) { e.stopPropagation(); closeExtras(); });
+    extrasOverlay.addEventListener('click', function (e) { if (e.target === extrasOverlay) closeExtras(); });
+
+    /* ═══════════════════════════════════════════
+       BTS FILMSTRIP — Drag-to-scroll
+    ═══════════════════════════════════════════ */
+    var strip = document.getElementById('bts-strip');
+    var isDragging = false;
+    var startX, initScroll, dragMoved;
+
+    strip.addEventListener('mousedown', function (e) {
+      isDragging = true;
+      dragMoved = false;
+      startX = e.pageX - strip.offsetLeft;
+      initScroll = strip.scrollLeft;
+      strip.classList.add('is-dragging');
+    });
+
+    window.addEventListener('mouseup', function () {
+      if (!isDragging) return;
+      isDragging = false;
+      strip.classList.remove('is-dragging');
+    });
+
+    strip.addEventListener('mousemove', function (e) {
+      if (!isDragging) return;
+      e.preventDefault();
+      var x = e.pageX - strip.offsetLeft;
+      var walk = (x - startX) * 1.1;
+      strip.scrollLeft = initScroll - walk;
+      if (Math.abs(walk) > 5) dragMoved = true;
+    });
+
+    /* ═══════════════════════════════════════════
+       BTS NAV ARROWS
+    ═══════════════════════════════════════════ */
+    var arrowLeft  = document.getElementById('bts-arrow-left');
+    var arrowRight = document.getElementById('bts-arrow-right');
+
+    function updateArrows() {
+      var atStart = strip.scrollLeft <= 10;
+      var atEnd   = strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 10;
+      arrowLeft.classList.toggle('is-hidden', atStart);
+      arrowRight.classList.toggle('is-hidden', atEnd);
+    }
+
+    arrowLeft.addEventListener('click', function () {
+      strip.scrollBy({ left: -strip.clientWidth * 0.75, behavior: 'smooth' });
+    });
+    arrowRight.addEventListener('click', function () {
+      strip.scrollBy({ left: strip.clientWidth * 0.75, behavior: 'smooth' });
+    });
+
+    strip.addEventListener('scroll', updateArrows, { passive: true });
+    window.addEventListener('resize', updateArrows);
+    updateArrows();
+
+    /* ═══════════════════════════════════════════
+       BTS LIGHTBOX
+    ═══════════════════════════════════════════ */
+    var btsLightbox = document.getElementById('bts-lightbox');
+    var btsPhoto    = document.getElementById('bts-lb-photo');
+    var btsCounter  = document.getElementById('bts-lb-counter');
+    var btsPhotos   = document.querySelectorAll('.bts-photo');
+    var btsCurrent  = 0;
+
+    function openBtsLightbox(idx) {
+      btsCurrent = idx;
+      updateBtsLightbox();
+      btsLightbox.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeBtsLightbox() {
+      btsLightbox.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+
+    function updateBtsLightbox() {
+      var f = btsPhotos[btsCurrent];
+      var img = f.querySelector('img');
+      btsPhoto.innerHTML = '';
+      if (img) {
+        var clone = document.createElement('img');
+        clone.src = img.src;
+        clone.alt = img.alt || 'BTS photo ' + (btsCurrent + 1);
+        btsPhoto.appendChild(clone);
+      } else {
+        btsPhoto.textContent = 'BTS PHOTO ' + (btsCurrent + 1);
+      }
+      btsCounter.textContent = (btsCurrent + 1) + ' / ' + btsPhotos.length;
+    }
+
+    btsPhotos.forEach(function (photo) {
+      photo.addEventListener('click', function () {
+        if (dragMoved) return;
+        openBtsLightbox(parseInt(this.dataset.index, 10));
+      });
+      photo.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openBtsLightbox(parseInt(this.dataset.index, 10));
+        }
+      });
+    });
+
+    document.getElementById('bts-lb-close').addEventListener('click', closeBtsLightbox);
+    document.getElementById('bts-lb-prev').addEventListener('click', function () {
+      btsCurrent = (btsCurrent - 1 + btsPhotos.length) % btsPhotos.length;
+      updateBtsLightbox();
+    });
+    document.getElementById('bts-lb-next').addEventListener('click', function () {
+      btsCurrent = (btsCurrent + 1) % btsPhotos.length;
+      updateBtsLightbox();
+    });
+    btsLightbox.addEventListener('click', function (e) {
+      if (e.target === btsLightbox) closeBtsLightbox();
+    });
+
+    /* ═══════════════════════════════════════════
+       STREAMING AUDIO PLAYERS
+    ═══════════════════════════════════════════ */
+    var trackRows = document.querySelectorAll('.film-track-row');
+    var currentAudio = null;
+    var currentRow = null;
+
+    function formatTime(secs) {
+      if (!secs || isNaN(secs)) return '0:00';
+      var m = Math.floor(secs / 60);
+      var s = Math.floor(secs % 60);
+      return m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    trackRows.forEach(function (row) {
+      var audio    = row.querySelector('audio');
+      var playBtn  = row.querySelector('.film-track-play');
+      var progress = row.querySelector('.film-track-progress');
+      var fill     = row.querySelector('.film-track-progress-fill');
+      var timeEl   = row.querySelector('.film-track-time');
+
+      audio.addEventListener('loadedmetadata', function () {
+        timeEl.textContent = '0:00 / ' + formatTime(audio.duration);
+      });
+
+      audio.addEventListener('timeupdate', function () {
+        var pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+        fill.style.width = pct + '%';
+        timeEl.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration);
+      });
+
+      audio.addEventListener('ended', function () {
+        playBtn.innerHTML = '&#9654;';
+        playBtn.classList.remove('is-playing');
+        playBtn.style.paddingLeft = '2px';
+        row.classList.remove('is-playing');
+        fill.style.width = '0%';
+        audio.currentTime = 0;
+        timeEl.textContent = '0:00 / ' + formatTime(audio.duration);
+        currentAudio = null;
+        currentRow = null;
+      });
+
+      playBtn.addEventListener('click', function () {
+        if (currentAudio && currentAudio !== audio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+          var prevBtn = currentRow.querySelector('.film-track-play');
+          var prevFill = currentRow.querySelector('.film-track-progress-fill');
+          var prevTime = currentRow.querySelector('.film-track-time');
+          prevBtn.innerHTML = '&#9654;';
+          prevBtn.classList.remove('is-playing');
+          prevBtn.style.paddingLeft = '2px';
+          currentRow.classList.remove('is-playing');
+          prevFill.style.width = '0%';
+          prevTime.textContent = '0:00 / ' + formatTime(currentAudio.duration);
+        }
+
+        if (audio.paused) {
+          audio.play().catch(function () {});
+          playBtn.innerHTML = '&#10074;&#10074;';
+          playBtn.classList.add('is-playing');
+          playBtn.style.paddingLeft = '0';
+          row.classList.add('is-playing');
+          currentAudio = audio;
+          currentRow = row;
+        } else {
+          audio.pause();
+          playBtn.innerHTML = '&#9654;';
+          playBtn.classList.remove('is-playing');
+          playBtn.style.paddingLeft = '2px';
+          row.classList.remove('is-playing');
+          currentAudio = null;
+          currentRow = null;
+        }
+      });
+
+      progress.addEventListener('click', function (e) {
+        if (!audio.duration) return;
+        var rect = progress.getBoundingClientRect();
+        var pct = (e.clientX - rect.left) / rect.width;
+        audio.currentTime = pct * audio.duration;
+        if (audio.paused) {
+          if (currentAudio && currentAudio !== audio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            var prevBtn = currentRow.querySelector('.film-track-play');
+            var prevFill = currentRow.querySelector('.film-track-progress-fill');
+            var prevTime = currentRow.querySelector('.film-track-time');
+            prevBtn.innerHTML = '&#9654;';
+            prevBtn.classList.remove('is-playing');
+            prevBtn.style.paddingLeft = '2px';
+            currentRow.classList.remove('is-playing');
+            prevFill.style.width = '0%';
+            prevTime.textContent = '0:00 / ' + formatTime(currentAudio.duration);
+          }
+          audio.play().catch(function () {});
+          playBtn.innerHTML = '&#10074;&#10074;';
+          playBtn.classList.add('is-playing');
+          playBtn.style.paddingLeft = '0';
+          row.classList.add('is-playing');
+          currentAudio = audio;
+          currentRow = row;
+        }
+      });
+    });
+
+    /* ═══════════════════════════════════════════
+       KEYBOARD — Escape closes lightbox
+    ═══════════════════════════════════════════ */
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        if (btsLightbox.classList.contains('is-open')) closeBtsLightbox();
+        if (filmOverlay.classList.contains('active')) closeFilm();
+        if (extrasOverlay.classList.contains('active')) closeExtras();
+      }
+      if (!btsLightbox.classList.contains('is-open')) return;
+      if (e.key === 'ArrowLeft') {
+        btsCurrent = (btsCurrent - 1 + btsPhotos.length) % btsPhotos.length;
+        updateBtsLightbox();
+      }
+      if (e.key === 'ArrowRight') {
+        btsCurrent = (btsCurrent + 1) % btsPhotos.length;
+        updateBtsLightbox();
+      }
+    });
+
+    /* ═══════════════════════════════════════════
+       SCROLL REVEAL (IntersectionObserver)
+    ═══════════════════════════════════════════ */
+    var revealEls = document.querySelectorAll('.reveal, .film-section-label');
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      }, { threshold: 0.15 });
+      revealEls.forEach(function (el) { observer.observe(el); });
+    } else {
+      revealEls.forEach(function (el) { el.classList.add('is-visible'); });
+    }
+
+  }());
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+# Video files
+*.mp4
+*.mov
+*.webm
+
+# Image files
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+*.svg
+
+# Asset directories
+assets/video/
+assets/videos/
+assets/images/
+assets/photos/
+
+# Claude Code config
+.claude/
+
+# System files
+.DS_Store
+Thumbs.db

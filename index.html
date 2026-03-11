@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Webbed Films</title>
+  <meta name="description" content="Webbed Films — the editorial, short film, and branded content work of Daniel Webb. Editor, writer, and director based in Kent, UK.">
+  <meta property="og:title" content="Webbed Films">
+  <meta property="og:description" content="Editor · Writer · Director — the work of Daniel Webb.">
+  <meta property="og:image" content="https://www.webbedfilms.com/assets/images/logo.png">
+  <meta property="og:url" content="https://www.webbedfilms.com/">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/home.css">
+  <style>
+    :root {
+      --zoom-dur:   1.2s;
+      --blink-dur:  1.5s;
+      --scanline-alpha: 0.07;
+      --vignette-str:   0.60;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      background: #000;
+    }
+
+    /* ── Video sits inside a plain div — we zoom the div, never the video ── */
+    #bg-wrapper {
+      position: fixed;
+      inset: 0;
+      /* Always on its own compositing layer from the start */
+      transform: translate3d(0, 0, 0);
+      will-change: transform;
+    }
+
+    #bg-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      /* No transform on the video itself — ever */
+    }
+
+    /* ── Scanlines ── */
+    .scanlines {
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px, transparent 2px,
+        rgba(0,0,0,var(--scanline-alpha)) 2px,
+        rgba(0,0,0,var(--scanline-alpha)) 4px
+      );
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* ── Vignette ── */
+    .vignette {
+      position: fixed; inset: 0;
+      background: radial-gradient(
+        ellipse 80% 80% at 50% 50%,
+        transparent 42%,
+        rgba(0,0,0,var(--vignette-str)) 100%
+      );
+      pointer-events: none;
+      z-index: 11;
+    }
+
+    /* ── Play button ── */
+    #play-btn {
+      position: fixed;
+      z-index: 20;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.55);
+      background: rgba(0, 0, 0, 0.20);
+      color: #fff;
+      font-size: 44px;
+      padding-left: 6px; /* optical centre for ▶ */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition:
+        background   0.35s ease,
+        border-color 0.35s ease,
+        box-shadow   0.35s ease,
+        transform    0.35s ease,
+        opacity      0.3s  ease;
+      box-shadow:
+        0 0 32px 8px rgba(255,255,255,0.14),
+        inset 0 0 20px rgba(255,255,255,0.05);
+      text-shadow: 0 0 20px rgba(255,255,255,0.9);
+    }
+
+    #play-btn:hover {
+      background: rgba(255,255,255,0.14);
+      border-color: rgba(255,255,255,0.90);
+      box-shadow:
+        0 0 60px 20px rgba(255,255,255,0.28),
+        inset 0 0 36px rgba(255,255,255,0.1);
+      transform: translate(-50%, -50%) scale(1.08);
+      text-shadow: 0 0 36px rgba(255,255,255,1);
+    }
+
+    @media (max-width: 768px) {
+      #play-btn { width: 90px; height: 90px; font-size: 34px; }
+    }
+
+    /* ── Reel overlay ── */
+    #reel-overlay {
+      position: fixed; inset: 0;
+      background: #000;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.45s ease;
+    }
+
+    #reel-overlay.active { opacity: 1; pointer-events: all; }
+
+    #reel { width: 100%; height: 100%; object-fit: contain; }
+
+    /* ── Close button ── */
+    #close-btn {
+      position: absolute;
+      top: 24px; right: 28px;
+      width: 44px; height: 44px;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 50%;
+      background: rgba(0,0,0,0.55);
+      color: rgba(255,255,255,0.78);
+      font-size: 17px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      opacity: 0;
+      transition: opacity 0.55s ease 0.5s, background 0.2s ease, border-color 0.2s ease;
+      z-index: 501;
+    }
+
+    #reel-overlay.active #close-btn { opacity: 1; }
+
+    #close-btn:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.55);
+      color: #fff;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header id="site-header">
+    <a href="index.html" class="logo-link">
+      <!-- DROP logo.png INTO assets/images/ -->
+      <img src="assets/images/logo.png" alt="Webbed Films" class="logo" onerror="this.style.display='none'">
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="the-suite.html">The Suite</a></li>
+        <li class="has-dropdown">
+          <a href="work.html">Work</a>
+          <ul class="dropdown">
+            <li><a href="documentary.html">Documentary</a></li>
+            <li><a href="corporate.html">Corporate</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="shorts.html">Shorts</a></li>
+          </ul>
+        </li>
+        <li class="has-dropdown">
+          <a href="webbed-films.html">Originals</a>
+          <ul class="dropdown">
+            <li><a href="webbed-films/rosemary.html">The Rite of Rosemary</a></li>
+            <li><a href="webbed-films/ngs.html">NGS</a></li>
+            <li><a href="webbed-films/blackout.html">Blackout</a></li>
+            <li><a href="webbed-films/christmas-claret.html">A Christmas Claret</a></li>
+          </ul>
+        </li>
+        <li><a href="https://www.revelstokefilms.com" target="_blank" rel="noopener noreferrer">Revelstoke</a></li>
+        <li><a href="https://watch.webbedfilms.com" target="_blank" rel="noopener noreferrer">Watch</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <!-- Mobile nav overlay -->
+  <div class="mobile-nav" id="mobile-nav" role="dialog" aria-label="Navigation menu">
+    <button class="mobile-nav-close" id="mobile-nav-close" aria-label="Close menu">&#x2715;</button>
+    <ul>
+      <li><a href="about.html">About</a></li>
+      <li><a href="the-suite.html">The Suite</a></li>
+      <li><a href="work.html">Work</a></li>
+      <li><a href="documentary.html">Documentary</a></li>
+      <li><a href="corporate.html">Corporate</a></li>
+      <li><a href="features.html">Features</a></li>
+      <li><a href="shorts.html">Shorts</a></li>
+      <li><span class="mobile-nav-section">Originals</span></li>
+      <li><a href="webbed-films/rosemary.html">The Rite of Rosemary</a></li>
+      <li><a href="webbed-films/ngs.html">NGS</a></li>
+      <li><a href="webbed-films/blackout.html">Blackout</a></li>
+      <li><a href="webbed-films/christmas-claret.html">A Christmas Claret</a></li>
+      <li><a href="https://www.revelstokefilms.com" target="_blank" rel="noopener noreferrer">Revelstoke</a></li>
+        <li><a href="https://watch.webbedfilms.com" target="_blank" rel="noopener noreferrer">Watch</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- Social sidebar -->
+  <aside class="social-sidebar" aria-label="Social media links">
+    <a href="https://www.instagram.com/webbedfilms/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+      </svg>
+    </a>
+    <a href="https://www.threads.net/@webbedfilms" target="_blank" rel="noopener noreferrer" aria-label="Threads">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.848 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.583-1.31-.879-2.367-.883h-.049c-.846 0-1.994.233-2.721 1.32L7.734 9.258c.598-.863 1.37-1.496 2.299-1.882.977-.405 2.07-.592 3.198-.555 1.865.067 3.305.676 4.28 1.81 1.166 1.35 1.606 3.274 1.255 5.64.024.018.049.035.073.053.57.417 1.073.964 1.466 1.618 1.083 1.798 1.019 4.384-.744 6.107-1.978 1.936-4.29 2.772-7.375 2.951z"/>
+      </svg>
+    </a>
+    <a href="https://x.com/webbedfilms_uk" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+      </svg>
+    </a>
+  </aside>
+
+  <!-- Wrapper div is what gets zoomed — video itself never transforms -->
+  <div id="bg-wrapper">
+    <video id="bg-video" src="Website Background.mp4" autoplay muted loop playsinline></video>
+  </div>
+
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
+
+  <main>
+
+  <button id="play-btn" title="Play reel">&#9654;</button>
+
+  <div id="reel-overlay">
+    <video id="reel" src="assets/video/showreel.mp4" playsinline></video>
+    <button id="close-btn" title="Close (Esc)">&#x2715;</button>
+  </div>
+
+  <!-- Spacer so footer sits below the 100vh hero (fixed CRT elements stay on-screen) -->
+  <div class="hero-spacer"></div>
+
+  <!-- UPDATE PROJECT NAME HERE -->
+  <div id="currently-editing" aria-hidden="true">
+    <span class="ce-dot">●</span>&thinsp;<span class="ce-label">// CURRENTLY IN POST</span>
+    <span class="ce-project">THE SIDECAR GUYS: RIDICULOUS RIDES</span>
+  </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-bottom">
+      <span class="footer-copy">&copy; 2026 Webbed Films</span>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/webbedfilms/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+        </a>
+        <a href="https://www.threads.net/@webbedfilms" target="_blank" rel="noopener noreferrer" aria-label="Threads">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.848 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.583-1.31-.879-2.367-.883h-.049c-.846 0-1.994.233-2.721 1.32L7.734 9.258c.598-.863 1.37-1.496 2.299-1.882.977-.405 2.07-.592 3.198-.555 1.865.067 3.305.676 4.28 1.81 1.166 1.35 1.606 3.274 1.255 5.64.024.018.049.035.073.053.57.417 1.073.964 1.466 1.618 1.083 1.798 1.019 4.384-.744 6.107-1.978 1.936-4.29 2.772-7.375 2.951z"/>
+          </svg>
+        </a>
+        <a href="https://x.com/webbedfilms_uk" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/nav.js"></script>
+  <script src="js/flourishes.js"></script>
+  <script>
+    const VIDEO_W = 1920, VIDEO_H = 1080;
+
+    var SCREEN = { x1: 0.128, y1: 0.215, x2: 0.490, y2: 0.590 };
+
+    function getVideoLayout() {
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const va = VIDEO_W / VIDEO_H, vpa = vw / vh;
+      if (vpa >= va) {
+        return { renderedW: vw, renderedH: vw / va, offsetX: 0, offsetY: (vh - vw / va) / 2 };
+      } else {
+        return { renderedW: vh * va, renderedH: vh, offsetX: (vw - vh * va) / 2, offsetY: 0 };
+      }
+    }
+
+    function getScreenRect() {
+      const { renderedW, renderedH, offsetX, offsetY } = getVideoLayout();
+      const left   = SCREEN.x1 * renderedW + offsetX;
+      const top    = SCREEN.y1 * renderedH + offsetY;
+      const right  = SCREEN.x2 * renderedW + offsetX;
+      const bottom = SCREEN.y2 * renderedH + offsetY;
+      return { left, top, right, bottom,
+               width: right - left, height: bottom - top,
+               centerX: (left + right) / 2, centerY: (top + bottom) / 2 };
+    }
+
+    const playBtn   = document.getElementById('play-btn');
+
+    /* Position play button at the CRT screen centre */
+    function positionPlayBtn() {
+      var r = getScreenRect();
+      playBtn.style.left = r.centerX + 'px';
+      playBtn.style.top  = r.centerY + 'px';
+    }
+    positionPlayBtn();
+    window.addEventListener('resize', positionPlayBtn);
+
+    /* ── Zoom targets the wrapper div, not the video element ── */
+    const bgWrapper   = document.getElementById('bg-wrapper');
+    const reelOverlay = document.getElementById('reel-overlay');
+    const reelVideo      = document.getElementById('reel');
+    const closeBtn       = document.getElementById('close-btn');
+
+    let state = 'idle';
+
+    function cssMs(v) {
+      const raw = getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+      return raw.endsWith('ms') ? parseFloat(raw) : parseFloat(raw) * 1000;
+    }
+
+    function zoomParams() {
+      const r  = getScreenRect();
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const scale = Math.max(vw / r.width, vh / r.height) * 1.04;
+      return {
+        scale,
+        originX: r.centerX, originY: r.centerY,
+        tx: vw / 2 - r.centerX, ty: vh / 2 - r.centerY
+      };
+    }
+
+    /* ── OPEN ── */
+    playBtn.addEventListener('click', function() {
+      if (state !== 'idle') return;
+      state = 'opening';
+
+      const zoomMs = cssMs('--zoom-dur');
+
+      playBtn.style.opacity   = '0';
+
+      const { scale, originX, originY, tx, ty } = zoomParams();
+      bgWrapper.style.transformOrigin = originX + 'px ' + originY + 'px';
+      bgWrapper.style.transition = 'transform ' + zoomMs + 'ms cubic-bezier(0.76,0,0.24,1)';
+      bgWrapper.style.transform  = 'translate3d(' + tx + 'px,' + ty + 'px,0) scale(' + scale + ')';
+
+      setTimeout(function() {
+        reelOverlay.classList.add('active');
+        reelVideo.play().catch(function() {});
+        state = 'open';
+        if (reelOverlay.requestFullscreen) {
+          reelOverlay.requestFullscreen().catch(function() {});
+        }
+      }, zoomMs * 0.68);
+    });
+
+    /* ── CLOSE ── */
+    function closeReel() {
+      if (state !== 'open') return;
+      state = 'closing';
+
+      const zoomMs = cssMs('--zoom-dur');
+
+      if (document.fullscreenElement) document.exitFullscreen().catch(function() {});
+      reelVideo.pause();
+      reelOverlay.classList.remove('active');
+
+      setTimeout(function() {
+        bgWrapper.style.transition = 'transform ' + zoomMs + 'ms cubic-bezier(0.76,0,0.24,1)';
+        bgWrapper.style.transform  = 'translate3d(0,0,0)';
+
+        setTimeout(function() {
+          playBtn.style.opacity   = '';
+          reelVideo.currentTime = 0;
+          state = 'idle';
+        }, zoomMs);
+
+      }, 300);
+    }
+
+    closeBtn.addEventListener('click', function(e) { e.stopPropagation(); closeReel(); });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeReel(); });
+    reelOverlay.addEventListener('click', function(e) { if (e.target === reelOverlay) closeReel(); });
+    reelVideo.addEventListener('ended', function() { closeReel(); });
+    document.addEventListener('fullscreenchange', function() {
+      if (!document.fullscreenElement && state === 'open') closeReel();
+    });
+  </script>
+
+</body>
+</html>

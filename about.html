@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — Webbed Films</title>
+  <meta name="description" content="Daniel Webb — film and video editor based in Kent, UK. Editor, writer, and director with credits spanning documentary, short film, feature film, and branded content.">
+  <meta property="og:title" content="About — Webbed Films">
+  <meta property="og:description" content="Daniel Webb — editor, writer, and director. Documentary, short film, feature film, and branded content.">
+  <meta property="og:image" content="https://www.webbedfilms.com/assets/images/Portrait%201.jpg">
+  <meta property="og:url" content="https://www.webbedfilms.com/about.html">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+
+    /* ══ VIDEO BACKGROUND ══════════════════════════════════ */
+
+    .about-bg-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .about-bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.68);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* ══ SCROLL ANIMATION ══════════════════════════════════ */
+
+    .anim {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .anim.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .testimonials-grid .testimonial-card:nth-child(1) { transition-delay: 0.0s; }
+    .testimonials-grid .testimonial-card:nth-child(2) { transition-delay: 0.1s; }
+    .testimonials-grid .testimonial-card:nth-child(3) { transition-delay: 0.2s; }
+    .testimonials-grid .testimonial-card:nth-child(4) { transition-delay: 0.3s; }
+    .testimonials-grid .testimonial-card:nth-child(5) { transition-delay: 0.4s; }
+    .testimonials-grid .testimonial-card:nth-child(6) { transition-delay: 0.5s; }
+
+    /* ══ SECTION 1 — FILM STRIP HEADER ════════════════════ */
+
+    .about-page-header {
+      margin-top: var(--header-h);
+      padding: 20px 0 0;
+    }
+
+    .filmstrip {
+      width: 100%;
+      background: rgba(6, 6, 6, 0.88);
+      border-top: 1px solid rgba(240, 237, 232, 0.14);
+      border-bottom: 1px solid rgba(240, 237, 232, 0.14);
+      overflow: hidden;
+      opacity: 0;
+      animation: filmstripFadeIn 0.5s ease forwards;
+      animation-delay: 0.2s;
+    }
+
+    @keyframes filmstripFadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .filmstrip-holes {
+      height: 38px;
+      background-color: rgba(4, 4, 4, 0.98);
+      background-image: repeating-linear-gradient(
+        to right,
+        transparent 0px,
+        transparent 8px,
+        rgba(240, 237, 232, 0.3) 8px,
+        rgba(240, 237, 232, 0.3) 26px,
+        transparent 26px,
+        transparent 36px
+      );
+      background-size: 36px 22px;
+      background-repeat: repeat-x;
+      background-position: 0 8px;
+      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.8), inset 0 -1px 4px rgba(0, 0, 0, 0.8);
+      animation: filmReel 2.5s linear infinite;
+      animation-delay: 0.2s;
+    }
+
+    @keyframes filmReel {
+      from { background-position: 0 8px; }
+      to   { background-position: -36px 8px; }
+    }
+
+    .filmstrip-body {
+      padding: 40px 64px 44px;
+      border-top: 1px solid rgba(240, 237, 232, 0.08);
+      border-bottom: 1px solid rgba(240, 237, 232, 0.08);
+      text-align: center;
+      position: relative;
+    }
+
+    .filmstrip-body::before,
+    .filmstrip-body::after {
+      content: '';
+      position: absolute;
+      top: 20px;
+      bottom: 20px;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, rgba(240, 237, 232, 0.1), transparent);
+      pointer-events: none;
+    }
+
+    .filmstrip-body::before { left: 32px; }
+    .filmstrip-body::after  { right: 32px; }
+
+    .filmstrip-name .name-first { font-weight: 300; }
+    .filmstrip-name .name-last  { font-weight: 700; }
+
+    .filmstrip-name {
+      font-family: var(--font-heading);
+      font-style: normal;
+      font-weight: 300;
+      font-size: 80px;
+      line-height: 1;
+      color: var(--text);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin: 0 0 18px;
+      opacity: 0;
+      animation: filmstripFadeIn 0.45s ease forwards;
+      animation-delay: 0.6s;
+    }
+
+    .filmstrip-role {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      letter-spacing: 0.25em;
+      color: var(--color-gold);
+      text-transform: uppercase;
+      margin: 0;
+      opacity: 0;
+      animation: filmstripFadeIn 0.45s ease forwards;
+      animation-delay: 0.8s;
+    }
+
+    /* ══ SECTION SEPARATOR ══════════════════════════════════ */
+
+    .section-separator {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    .section-separator::after {
+      content: '';
+      display: block;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(200, 169, 110, 0.3), transparent);
+    }
+
+    /* ══ SECTION 2 — BIO ═══════════════════════════════════ */
+
+    .about-bio {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 36px 40px 40px;
+      display: flex;
+      gap: 48px;
+      align-items: flex-start;
+    }
+
+    .bio-text-col {
+      flex: 1;
+      min-width: 0;
+      background: rgba(10, 10, 10, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 4px;
+      padding: 32px 36px;
+    }
+
+    .bio-text-col p {
+      font-family: var(--font-ui);
+      font-size: 15px;
+      line-height: 1.85;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .bio-text-col p:last-child { margin-bottom: 0; }
+    .bio-text-col p.bio-break  { margin-bottom: 40px; }
+
+    .bio-text-col a {
+      color: var(--color-gold);
+      text-decoration: none;
+    }
+
+    .bio-text-col a:hover {
+      text-decoration: underline;
+    }
+
+    .bio-image-col {
+      flex: 0 0 240px;
+      align-self: flex-start;
+      position: sticky;
+      top: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .polaroid {
+      background: #f0ede8;
+      padding: 8px 8px 36px 8px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.4);
+      display: inline-block;
+    }
+
+    .polaroid:nth-child(1) { transform: rotate(-2.5deg); }
+    .polaroid:nth-child(2) { transform: rotate(1.8deg); }
+    .polaroid:nth-child(3) { transform: rotate(-1.2deg); }
+    .polaroid:hover {
+      transform: rotate(0deg) scale(1.04);
+      transition: transform 0.3s ease;
+      z-index: 10;
+      position: relative;
+    }
+
+    .polaroid img {
+      width: 200px;
+      height: 280px;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+
+    /* ══ SOFTWARE ICONS ══════════════════════════════════════ */
+
+    .software-icons {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .software-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: default;
+    }
+
+    .software-icon svg {
+      transition: all 0.25s ease;
+    }
+
+    .software-icon:hover svg {
+      stroke: var(--color-gold);
+    }
+
+    .software-icon:hover svg .centre-dot {
+      fill: var(--color-gold);
+    }
+
+    .software-icon span {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      color: rgba(240, 237, 232, 0.55);
+      text-transform: none;
+      transition: color 0.25s ease;
+    }
+
+    .software-icon:hover span {
+      color: var(--color-gold);
+    }
+
+    /* ══ TOOLS BAND ════════════════════════════════════════ */
+
+    .tools-band {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 40px 48px;
+      text-align: center;
+    }
+
+    .tools-label {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      color: var(--color-gold);
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    /* ══ SECTION 3 — TESTIMONIALS ══════════════════════════ */
+
+    .about-testimonials {
+      padding: 48px 40px 64px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .testimonials-label {
+      font-family: var(--font-heading);
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 0.3em;
+      color: var(--color-gold);
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .testimonial-card {
+      background: rgba(10, 10, 10, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 32px 28px;
+      border-radius: 2px;
+      transition: border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    .testimonial-card:hover {
+      border-color: rgba(200, 169, 110, 0.4);
+      box-shadow: 0 0 28px rgba(200, 169, 110, 0.07), 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .quote-mark {
+      font-family: var(--font-display);
+      font-size: 32px;
+      color: var(--color-gold);
+      opacity: 0.4;
+      line-height: 1;
+      display: block;
+      margin-bottom: -16px;
+      user-select: none;
+    }
+
+    .testimonial-text {
+      font-family: var(--font-ui);
+      font-style: normal;
+      font-size: 14px;
+      line-height: 1.85;
+      color: #e8e4de;
+    }
+
+    .testimonial-name {
+      display: block;
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      color: var(--color-gold);
+      text-transform: uppercase;
+      margin-top: 20px;
+    }
+
+    .testimonial-role {
+      display: block;
+      font-family: var(--font-ui);
+      font-size: 11px;
+      color: var(--color-muted);
+      margin-top: 4px;
+    }
+
+    /* ══ RESPONSIVE ════════════════════════════════════════ */
+
+    @media (max-width: 1024px) {
+      .section-separator, .about-bio, .about-testimonials, .tools-band { padding-left: 24px; padding-right: 24px; }
+    }
+
+    @media (max-width: 900px) {
+      .about-bio { flex-direction: column; gap: 40px; }
+      .bio-image-col { flex: none; width: 100%; position: static; }
+      .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .filmstrip-body { padding: 28px 24px 32px; }
+      .filmstrip-name { font-size: 40px; letter-spacing: 0.08em; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .about-bio, .about-testimonials, .tools-band { padding-left: 16px; padding-right: 16px; }
+      .section-separator { padding-left: 16px; padding-right: 16px; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Looping noise video background -->
+  <video class="about-bg-video"
+         src="assets/video/noise%20background.mp4"
+         autoplay loop muted playsinline></video>
+  <div class="about-bg-overlay"></div>
+
+  <!-- ── HEADER ───────────────────────────────────────── -->
+  <header id="site-header">
+    <a href="index.html" class="logo-link">
+      <img src="assets/images/logo.png" alt="Webbed Films" class="logo" onerror="this.style.display='none'">
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="the-suite.html">The Suite</a></li>
+        <li class="has-dropdown">
+          <a href="work.html">Work</a>
+          <ul class="dropdown">
+            <li><a href="documentary.html">Documentary</a></li>
+            <li><a href="corporate.html">Corporate</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="shorts.html">Shorts</a></li>
+          </ul>
+        </li>
+        <li class="has-dropdown">
+          <a href="webbed-films.html">Originals</a>
+          <ul class="dropdown">
+            <li><a href="webbed-films/rosemary.html">The Rite of Rosemary</a></li>
+            <li><a href="webbed-films/ngs.html">NGS</a></li>
+            <li><a href="webbed-films/blackout.html">Blackout</a></li>
+            <li><a href="webbed-films/christmas-claret.html">A Christmas Claret</a></li>
+          </ul>
+        </li>
+        <li><a href="https://www.revelstokefilms.com" target="_blank" rel="noopener noreferrer">Revelstoke</a></li>
+        <li><a href="https://watch.webbedfilms.com" target="_blank" rel="noopener noreferrer">Watch</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <!-- ── MOBILE NAV ─────────────────────────────────── -->
+  <div class="mobile-nav" id="mobile-nav" role="dialog" aria-label="Navigation menu">
+    <button class="mobile-nav-close" id="mobile-nav-close" aria-label="Close menu">&#x2715;</button>
+    <ul>
+      <li><a href="about.html">About</a></li>
+      <li><a href="the-suite.html">The Suite</a></li>
+      <li><a href="work.html">Work</a></li>
+      <li><a href="documentary.html">Documentary</a></li>
+      <li><a href="corporate.html">Corporate</a></li>
+      <li><a href="features.html">Features</a></li>
+      <li><a href="shorts.html">Shorts</a></li>
+      <li><span class="mobile-nav-section">Originals</span></li>
+      <li><a href="webbed-films/rosemary.html">The Rite of Rosemary</a></li>
+      <li><a href="webbed-films/ngs.html">NGS</a></li>
+      <li><a href="webbed-films/blackout.html">Blackout</a></li>
+      <li><a href="webbed-films/christmas-claret.html">A Christmas Claret</a></li>
+      <li><a href="https://www.revelstokefilms.com" target="_blank" rel="noopener noreferrer">Revelstoke</a></li>
+        <li><a href="https://watch.webbedfilms.com" target="_blank" rel="noopener noreferrer">Watch</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       MAIN CONTENT
+  ══════════════════════════════════════════════════ -->
+  <main>
+
+    <!-- ── SECTION 1: FILM STRIP HEADER ────────────────── -->
+    <section class="about-page-header">
+      <div class="filmstrip">
+        <div class="filmstrip-holes"></div>
+        <div class="filmstrip-body">
+          <h1 class="filmstrip-name"><span class="name-first">Daniel</span> <span class="name-last">Webb</span></h1>
+          <p class="filmstrip-role">Editor &middot; Writer &middot; Director</p>
+        </div>
+        <div class="filmstrip-holes"></div>
+      </div>
+    </section>
+
+    <!-- ── SEPARATOR ──────────────────────────────────── -->
+    <div class="section-separator"></div>
+
+    <!-- ── SECTION 2: BIO + PHOTOS ─────────────────────── -->
+    <section class="about-bio">
+
+      <div class="bio-text-col anim">
+<p>I'm a film and video editor based in Gravesend, Kent. Close enough to London to make the IMAX. Close enough to the countryside to walk off a bad cut with a film score in my ears, always a few notches too loud.</p>
+        <p>I've been obsessed with films my entire life. Not casually obsessed. The kind where I'd watch something six or seven times: once for the story, then again and again to figure out why it worked. Why that cut. Why that silence. I was making films at eight years old with a Lego webcam. By the time I was a teenager I was spending my pocket money on a TV guide and a stack of VHS tapes from Argos, recording films day and night.</p>
+        <p class="bio-break">Editing has never just been about cutting. It's about colour and grade. Sound design. Music used in exactly the right way. A film isn't finished when the timeline is locked. It's finished when everything is working at once.</p>
+        <p>My work spans documentary, short film, feature film and branded content. It's picked up a few Cannes Dolphins, LENs awards and EVCOMs. The better reward is the moment you hand a cut back and the director sees what the film actually is for the first time. Sometimes that's a good moment. Sometimes it isn't. And occasionally — the best feeling in this entire job — someone watches something I've cut and only realises an hour in that they haven't looked away.</p>
+        <p>Avid. Premiere. DaVinci Resolve. Best tool for the job, always. No AI doing the cutting. Just ears, eyes and instinct.</p>
+        <p>I'm not a pair of hands waiting to be told what to do. I work closely with directors and producers to find the hidden shape of the story. The structure that was always there, waiting. Hundreds of hours of footage, and somewhere inside it, a film.</p>
+        <p>Webbed Films is where all of it lives — the editorial work, the short films I write and direct, and everything in between. If you want to see what that looks like, it's all here.</p>
+        <p>When I'm working and often when I'm not, you'll find me in my edit suite. Built from the ground up as a place to make films and watch them. Dark room, 5.1 surround, colour-accurate displays, a storage server that never sleeps. The kind of room where you lose track of time, and that's entirely the point. <a href="the-suite.html">Take a look.</a></p>
+        <p>Oh, and one more thing — I also write and direct short films under the Webbed Films banner. Editing makes you a better director. Directing makes you a better editor. Still testing that theory.</p>
+        <p>If you want an editor invested in the whole film and not just the cut, <a href="contact.html">get in touch</a>. Or if you just want to talk films over a coffee or a beer, that works too.</p>
+
+      </div>
+
+      <div class="bio-image-col anim">
+        <div class="polaroid">
+          <img src="assets/images/Portrait 1.jpg" alt="Daniel Webb">
+        </div>
+        <div class="polaroid">
+          <img src="assets/images/Portrait 2.jpg" alt="Daniel Webb">
+        </div>
+        <div class="polaroid">
+          <img src="assets/images/Portrait 3.jpg" alt="Daniel Webb on set">
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ── TOOLS BAND ─────────────────────────────────── -->
+    <section class="tools-band anim">
+      <p class="tools-label">Tools of the Trade</p>
+      <div class="software-icons">
+        <div class="software-icon">
+          <svg fill="rgba(240,237,232,0.5)" viewBox="0 0 50 50" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 25 2 C 12.309288 2 2 12.309297 2 25 C 2 37.690703 12.309288 48 25 48 C 37.690712 48 48 37.690703 48 25 C 48 12.309297 37.690712 2 25 2 z M 25 4 C 36.609833 4 46 13.390175 46 25 C 46 36.609825 36.609833 46 25 46 C 13.390167 46 4 36.609825 4 25 C 4 13.390175 13.390167 4 25 4 z M 25 8 C 21.14 8 18 10.968234 18 14.615234 C 18 18.161234 21.284422 22.183625 24.357422 24.765625 C 24.543422 24.921625 24.771 24.998047 25 24.998047 C 25.229 24.998047 25.457578 24.920672 25.642578 24.763672 C 28.715578 22.181672 32 18.161234 32 14.615234 C 32 10.969234 28.859 8.001 25 8 z M 15.429688 25.007812 C 13.863723 25.048535 12.407391 25.347219 11.244141 26.011719 C 9.7551406 26.861719 8.6874219 28.265937 8.2324219 29.960938 C 7.7494219 31.760937 8.0261875 33.743391 8.9921875 35.400391 C 10.330187 37.696391 12.721094 38.998047 15.121094 38.998047 C 16.214094 38.998047 17.309594 38.728203 18.308594 38.158203 C 21.414594 36.381203 23.276375 31.519547 23.984375 27.560547 C 24.070375 27.081547 23.798844 26.608359 23.339844 26.443359 C 20.957344 25.587109 18.039629 24.939941 15.429688 25.007812 z M 34.572266 25.007812 C 31.962529 24.939941 29.045234 25.587109 26.662109 26.443359 C 26.203109 26.608359 25.929625 27.081547 26.015625 27.560547 C 26.722625 31.519547 28.585406 36.383203 31.691406 38.158203 C 32.689406 38.728203 33.784906 38.998047 34.878906 38.998047 C 37.277906 38.998047 39.668766 37.697391 41.009766 35.400391 C 41.975766 33.743391 42.251531 31.761937 41.769531 29.960938 C 41.315531 28.264938 40.244859 26.862719 38.755859 26.011719 C 37.592609 25.347219 36.138107 25.048535 34.572266 25.007812 z"/>
+          </svg>
+          <span>DaVinci Resolve</span>
+        </div>
+        <div class="software-icon">
+          <svg fill="rgba(240,237,232,0.5)" width="40" height="40" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.15 8.42a2.93 2.93 0 0 0-1.18-.2 13.9 13.9 0 0 0-1.09.02v3.36l.39.02h.53c.39 0 .78-.06 1.15-.18.32-.09.6-.28.82-.53.21-.25.31-.59.31-1.03a1.45 1.45 0 0 0-.93-1.46zM12 0C5.373 0 0 5.373 0 12 0 18.627 5.373 24 12 24 18.627 24 24 18.627 24 12 24 5.373 18.627 0 12 0zM12.66 11.95c-.4.56-.96.98-1.61 1.22-.68.25-1.43.34-2.25.34l-.5-.01-.43-.01v3.21a.12.12 0 0 1-.11.14H5.82c-.08 0-.12-.04-.12-.13V6.42c0-.07.03-.11.1-.11l.56-.01.76-.02.87-.02.91-.01c.82 0 1.5.1 2.06.31.5.17.96.45 1.34.82.32.32.57.71.73 1.14.15.42.23.85.23 1.3 0 .86-.2 1.57-.6 2.13zM19.48 8.8v1.95c0 .08-.05.11-.16.11a4.35 4.35 0 0 0-1.92.37c-.19.09-.37.21-.51.37v5.1c0 .1-.04.14-.13.14h-1.97a.14.14 0 0 1-.16-.12v-5.58l-.01-.75-.02-.78c0-.23-.02-.45-.04-.68a.1.1 0 0 1 .07-.11h1.78c.1 0 .18.07.2.16a3.03 3.03 0 0 1 .13.92c.3-.35.67-.64 1.08-.86a3.1 3.1 0 0 1 1.52-.39c.07-.01.13.04.14.11v.04z"/>
+          </svg>
+          <span>Premiere Pro</span>
+        </div>
+        <div class="software-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1404 1404" width="40" height="40">
+            <!-- Outer reel ring -->
+            <circle cx="702" cy="702" r="500" fill="none" stroke="rgba(240,237,232,0.5)" stroke-width="90"/>
+            <!-- Center frame -->
+            <rect x="377" y="475" width="650" height="455" rx="28" fill="none" stroke="rgba(240,237,232,0.5)" stroke-width="75"/>
+            <!-- Top arc tab -->
+            <path d="M430 330 Q702 140 974 330 L988 430 Q702 420 416 430 Z" fill="rgba(240,237,232,0.5)"/>
+            <!-- Bottom arc tab -->
+            <path d="M430 1074 Q702 1264 974 1074 L988 974 Q702 984 416 974 Z" fill="rgba(240,237,232,0.5)"/>
+            <!-- Left sprockets -->
+            <rect x="242" y="552" width="125" height="120" rx="24" fill="rgba(240,237,232,0.5)"/>
+            <rect x="242" y="738" width="125" height="120" rx="24" fill="rgba(240,237,232,0.5)"/>
+            <!-- Right sprockets -->
+            <rect x="1037" y="552" width="125" height="120" rx="24" fill="rgba(240,237,232,0.5)"/>
+            <rect x="1037" y="738" width="125" height="120" rx="24" fill="rgba(240,237,232,0.5)"/>
+          </svg>
+          <span>Avid Media Composer</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 3: TESTIMONIALS ─────────────────────── -->
+    <section class="about-testimonials">
+
+      <p class="testimonials-label anim">What People Say</p>
+
+      <div class="testimonials-grid">
+
+        <article class="testimonial-card anim">
+          <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+          <p class="testimonial-text">Dan did a fantastic job under very difficult circumstances, coming into the project late and immediately working to a very high standard to overcome previous errors. His technical skill and collaborative approach makes him someone to watch.</p>
+          <span class="testimonial-name">Allistair Mitchell</span>
+          <span class="testimonial-role">Director, Shooting Movies Ltd.</span>
+        </article>
+
+        <article class="testimonial-card anim">
+          <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+          <p class="testimonial-text">Dan is an awesome editor who has a terrific and instinctive grasp of storytelling. Easy to work with and an excellent communicator. Would recommend him 100% to anyone who wants to take their project to the next level.</p>
+          <span class="testimonial-name">Rayna Campbell</span>
+          <span class="testimonial-role">Director, J Rocka Entertainment</span>
+        </article>
+
+        <article class="testimonial-card anim">
+          <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+          <p class="testimonial-text">Having worked with Dan on five shorts, one feature and a music video — Dan is a multi-talented filmmaker, able to edit and grade with excellent results. He very quickly gets into the director's mind and inserts his own flair, which makes the director's job so much easier.</p>
+          <span class="testimonial-name">Timothy Reynard</span>
+          <span class="testimonial-role">Director, Decantillon Films</span>
+        </article>
+
+        <article class="testimonial-card anim">
+          <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+          <p class="testimonial-text">From my experience having Dan on board our projects, he is a fantastic and committed professional. A great team player who brings great ideas to the table. I have worked with Dan on several projects and will continue to seek his services.</p>
+          <span class="testimonial-name">Daniel Pellegrino</span>
+          <span class="testimonial-role">Producer, Attaché Productions</span>
+        </article>
+
+        <article class="testimonial-card anim">
+          <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+          <p class="testimonial-text">Dan is simply an incredible editor and director. His skill and vision is unmatched amongst his peers, and his humorous and affable manner make it always a pleasure to be part of his crew.</p>
+          <span class="testimonial-name">Nina Igbino</span>
+          <span class="testimonial-role">Make Up Artist</span>
+        </article>
+
+        <article class="testimonial-card anim">
+          <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+          <p class="testimonial-text">Dan brought a clarity to the edit that we hadn't managed to find in months. He understood the film better than we did by the second week. Rare quality in an editor.</p>
+          <span class="testimonial-name">James Calloway</span>
+          <span class="testimonial-role">Director, Parallel Frame Productions</span>
+        </article>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── FOOTER ─────────────────────────────────────── -->
+  <footer class="site-footer">
+    <div class="footer-bottom">
+      <span class="footer-copy">&copy; 2026 Webbed Films</span>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/webbedfilms/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+        </a>
+        <a href="https://www.threads.net/@webbedfilms" target="_blank" rel="noopener noreferrer" aria-label="Threads">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.848 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.583-1.31-.879-2.367-.883h-.049c-.846 0-1.994.233-2.721 1.32L7.734 9.258c.598-.863 1.37-1.496 2.299-1.882.977-.405 2.07-.592 3.198-.555 1.865.067 3.305.676 4.28 1.81 1.166 1.35 1.606 3.274 1.255 5.64.024.018.049.035.073.053.57.417 1.073.964 1.466 1.618 1.083 1.798 1.019 4.384-.744 6.107-1.978 1.936-4.29 2.772-7.375 2.951z"/>
+          </svg>
+        </a>
+        <a href="https://x.com/webbedfilms_uk" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/nav.js"></script>
+  <script src="js/flourishes.js"></script>
+  <script>
+    /* ── Scroll-in animations via IntersectionObserver ── */
+    (function () {
+      var items = document.querySelectorAll('.anim');
+
+      if (!('IntersectionObserver' in window)) {
+        items.forEach(function (el) { el.classList.add('is-visible'); });
+        return;
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+      items.forEach(function (el) { observer.observe(el); });
+    }());
+
+    /* ── Polaroid parallax ── */
+    (function () {
+      var col = document.querySelector('.bio-image-col');
+      var bio = document.querySelector('.about-bio');
+      if (!col || !bio) return;
+
+      var raf;
+      function update() {
+        var bioTop = bio.getBoundingClientRect().top;
+        var scrolledIn = Math.max(0, -bioTop);
+        var drift = Math.min(scrolledIn * 0.12, 72);
+        col.style.transform = 'translateY(-' + drift + 'px)';
+        raf = null;
+      }
+
+      window.addEventListener('scroll', function () {
+        if (!raf) raf = requestAnimationFrame(update);
+      }, { passive: true });
+
+      update();
+    }());
+  </script>
+
+</body>
+</html>
