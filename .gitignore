@@ -11,10 +11,11 @@
 *.webp
 *.svg
 
-# Asset directories
+# Asset directories (bulk media)
 assets/video/
 assets/videos/
-assets/images/
+assets/images/*
+!assets/images/logo.png
 assets/photos/
 
 # Claude Code config
