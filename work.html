@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Work — Webbed Films</title>
   <meta name="description" content="Browse the editorial and filmmaking portfolio of Daniel Webb — documentaries, corporate films, features, and shorts.">
@@ -816,7 +817,7 @@
       shorts:      { label: 'SHORTS',      color: '#74b9ff', page: 'shorts.html' }
     };
     var TRACK_ORDER = ['documentary', 'corporate', 'features', 'shorts'];
-    var IMG_EXTS = ['jpg', 'JPG', 'png'];
+    var IMG_EXTS = ['jpg', 'JPG', 'png', 'avif'];
 
     var phX = 0, phMax = 1600, phPaused = false;
     var clipData = [], kbIndex = -1;
@@ -1351,7 +1352,7 @@
     'use strict';
     var CAT_LABELS = { documentary: 'Documentary', corporate: 'Corporate', features: 'Features', shorts: 'Shorts' };
     var CAT_PAGES = { documentary: 'documentary.html', corporate: 'corporate.html', features: 'features.html', shorts: 'shorts.html' };
-    var IMG_EXTS = ['jpg', 'JPG', 'png'];
+    var IMG_EXTS = ['jpg', 'JPG', 'png', 'avif'];
     var grid = document.getElementById('browse-grid');
     var filterBar = document.getElementById('browse-filters');
     var allCards = [];
