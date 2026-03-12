@@ -534,14 +534,34 @@
       .contact-hero {
         padding-left: 24px;
         padding-right: 24px;
-        padding-top: 90px;
+        padding-top: 80px;
         padding-bottom: 12px;
       }
+      .contact-hero-line1 { font-size: clamp(32px, 9vw, 56px); }
+      .contact-hero-line2 { font-size: clamp(28px, 8vw, 48px); }
 
       .contact-section {
         grid-template-columns: 1fr;
         gap: 40px;
         padding: 0 24px 60px;
+      }
+
+      .copy-btn {
+        padding: 10px 16px;
+        font-size: 10px;
+        min-height: 44px;
+      }
+
+      .form-input,
+      .form-textarea {
+        font-size: 16px;  /* prevents iOS auto-zoom on focus */
+        padding: 12px 0;
+      }
+
+      .form-submit {
+        width: 100%;
+        padding: 16px 32px;
+        font-size: 12px;
       }
 
       /* On mobile, show details first, form second */

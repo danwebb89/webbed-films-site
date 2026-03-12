@@ -115,7 +115,14 @@
     }
 
     @media (max-width: 768px) {
-      #play-btn { width: 90px; height: 90px; font-size: 34px; }
+      #play-btn {
+        width: 80px; height: 80px; font-size: 30px;
+        /* On mobile, JS positions via CRT rect but the video crops heavily.
+           Override to dead-centre of viewport as fallback. */
+        left: 50% !important;
+        top: 50% !important;
+        border-width: 2px;
+      }
     }
 
     /* ── Reel overlay ── */

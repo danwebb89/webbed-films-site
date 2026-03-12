@@ -343,14 +343,27 @@ body {
 /* ─── MOBILE ──────────────────────────────────────────── */
 
 @media (max-width: 768px) {
+  :root { --header-h: 60px; }
   .main-nav       { display: none; }
   .hamburger      { display: flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; }
   .social-sidebar { display: none; }
-  #site-header    { padding: 0 20px; }
-  .footer-bottom  { padding: 16px 20px; }
+  #site-header    { padding: 0 16px; height: var(--header-h); }
+  .logo           { max-height: 50px; }
+  .footer-bottom  { padding: 16px 20px; flex-wrap: wrap; gap: 12px; justify-content: center; }
   .footer-social a { width: 44px; height: 44px; }
   .mobile-nav a   { min-height: 44px; display: flex; align-items: center; }
+  .mobile-nav-section {
+    font-family: var(--font-heading);
+    font-size: clamp(14px, 3vw, 18px);
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--color-gold);
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
   .mobile-nav-close { min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+  #currently-editing { display: none; }
+  .page-hero { padding: 40px 20px; }
 }
 
 
