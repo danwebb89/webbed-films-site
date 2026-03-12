@@ -12,6 +12,7 @@ UNRAID_USER="root"
 UNRAID_PATH="/mnt/user/appdata/webbed-films-site/assets/"
 SSH_KEY="$HOME/.ssh/id_ed25519_unraid"
 CF_ZONE_ID="8b36b64a00523c5759aab251d3746484"
+CF_API_TOKEN="WKTFJCBuar2JyZONtktSjqvo7TFa1Ici-Q2Lfb-e"
 
 echo "=== Webbed Films Deploy ==="
 
