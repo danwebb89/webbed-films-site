@@ -38,6 +38,7 @@
     ══════════════════════════════════════════ */
     .suite-hero {
       position: relative;
+      z-index: 10;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -673,52 +674,40 @@
       }
 
       /*
-       * Pre-defined slot centres (% x, px y) — hand-placed to fill the
-       * space edge-to-edge with no big holes.  15 slots for 15 frames.
-       * Each row is staggered so the eye never sees a grid.
+       * Scattered pile — frames thrown across the full width with heavy
+       * overlap.  5 across × 3 rows, tightly packed so they pile on top
+       * of each other like real Polaroids tossed on a table.
        */
-      var slots = [
-        /* Row 1: 4 across — tighter, more central */
-        { x:  8, y:  10 },
-        { x: 28, y:  30 },
-        { x: 50, y:   0 },
-        { x: 72, y:  25 },
-        /* Row 2: 4 across, overlapping row 1 */
-        { x: 16, y: 210 },
-        { x: 38, y: 190 },
-        { x: 58, y: 220 },
-        { x: 78, y: 195 },
-        /* Row 3: 4 across, overlapping row 2 */
-        { x:  6, y: 400 },
-        { x: 30, y: 380 },
-        { x: 52, y: 410 },
-        { x: 74, y: 385 },
-        /* Row 4: 3 across, centred, overlapping row 3 */
-        { x: 18, y: 580 },
-        { x: 44, y: 600 },
-        { x: 68, y: 570 }
-      ];
+      var cols = 5, rowCount = 3;
+      var perRow = Math.ceil(count / rowCount);
+      var rowH = 260;                   /* very tight — forces overlap */
 
-      /* Container height to fit all rows */
       var sheet = document.querySelector('.suite-contact-sheet');
-      if (sheet) sheet.style.minHeight = '900px';
+      if (sheet) sheet.style.minHeight = (rowCount * rowH + 200) + 'px';
 
       for (var n = 0; n < count; n++) {
         var f = allFrames[order[n]];
-        var s = slots[n];
 
-        /* Random size — mostly generous so frames overlap */
-        var w = Math.round(rand(260, 460));
-        var h = Math.round(rand(220, 380));
+        var row = Math.floor(n / perRow);
+        var col = n % perRow;
+        var colW = 100 / perRow;
 
-        /* Jitter position away from the slot centre */
-        var lft = s.x + rand(-6, 6);
-        var top = s.y + rand(-30, 30);
+        /* Size: big frames that naturally overlap */
+        var w = Math.round(rand(300, 500));
+        var h = Math.round(rand(250, 420));
 
-        /* Rotation: usually subtle, occasionally big */
+        /* Position: spread full width (-2% to 80%) with generous jitter */
+        var baseX = col * colW + colW * 0.3;
+        var lft = baseX + rand(-8, 8);
+        lft = Math.max(-3, Math.min(80, lft));
+
+        var baseY = row * rowH;
+        var top = baseY + rand(-40, 60);
+
+        /* Rotation */
         var rot = Math.random() < 0.15
-          ? rand(-13, 13)
-          : rand(-6, 6);
+          ? rand(-14, 14)
+          : rand(-7, 7);
 
         f.style.width     = w + 'px';
         f.style.height    = h + 'px';
