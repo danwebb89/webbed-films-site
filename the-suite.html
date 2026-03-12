@@ -87,7 +87,7 @@
       position: relative;
       width: 100%;
       min-height: 900px;
-      overflow: visible;
+      overflow: hidden;
     }
 
     .contact-frame {
@@ -678,11 +678,12 @@
        * overlap.  5 across × 3 rows, tightly packed so they pile on top
        * of each other like real Polaroids tossed on a table.
        */
-      var cols = 5, rowCount = 3;
+      var rowCount = 3;
       var perRow = Math.ceil(count / rowCount);
-      var rowH = 260;                   /* very tight — forces overlap */
+      var rowH = 260;
 
       var sheet = document.querySelector('.suite-contact-sheet');
+      var sheetW = sheet ? sheet.offsetWidth : window.innerWidth;
       if (sheet) sheet.style.minHeight = (rowCount * rowH + 200) + 'px';
 
       for (var n = 0; n < count; n++) {
@@ -690,19 +691,20 @@
 
         var row = Math.floor(n / perRow);
         var col = n % perRow;
-        var colW = 100 / perRow;
+        var colW = sheetW / perRow;
 
         /* Size: big frames that naturally overlap */
-        var w = Math.round(rand(300, 500));
-        var h = Math.round(rand(250, 420));
+        var w = Math.round(rand(280, 460));
+        var h = Math.round(rand(230, 380));
 
-        /* Position: spread full width (-2% to 80%) with generous jitter */
-        var baseX = col * colW + colW * 0.3;
-        var lft = baseX + rand(-8, 8);
-        lft = Math.max(-3, Math.min(80, lft));
+        /* Position in px — keep every frame fully inside the container */
+        var baseX = col * colW + (colW - w) / 2;
+        var lft = baseX + rand(-40, 40);
+        lft = Math.max(0, Math.min(sheetW - w, lft));
 
         var baseY = row * rowH;
-        var top = baseY + rand(-40, 60);
+        var top = baseY + rand(-20, 50);
+        top = Math.max(0, top);
 
         /* Rotation */
         var rot = Math.random() < 0.15
@@ -712,7 +714,7 @@
         f.style.width     = w + 'px';
         f.style.height    = h + 'px';
         f.style.top       = Math.round(top) + 'px';
-        f.style.left      = lft.toFixed(1) + '%';
+        f.style.left      = Math.round(lft) + 'px';
         f.style.transform = 'rotate(' + rot.toFixed(1) + 'deg)';
         f.style.zIndex    = Math.floor(rand(1, 15));
       }
