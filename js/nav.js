@@ -31,6 +31,8 @@
     hamburger.setAttribute('aria-expanded', 'true');
   });
 
+  if (!closeBtn) return;
+
   closeBtn.addEventListener('click', function () {
     mobileNav.classList.remove('open');
     hamburger.setAttribute('aria-expanded', 'false');
