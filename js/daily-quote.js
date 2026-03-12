@@ -102,38 +102,46 @@
     }
   }, 1500);
 
-  /* ── Crossfade to a random tagline every 30s ── */
+  /* ── Crossfade to a random tagline every 30s — dynamic transition ── */
   setInterval(function () {
     currentIndex = randomIndex(currentIndex);
 
-    /* Fade out + drift up */
-    var t = 'opacity 0.8s ease, transform 0.8s ease';
-    line1El.style.transition = t;
-    line2El.style.transition = t;
+    /* Fade out — scale up + blur + drift up */
+    var tOut = 'opacity 0.7s ease, transform 0.7s ease, filter 0.7s ease';
+    line1El.style.transition = tOut;
+    line2El.style.transition = tOut;
     line1El.style.opacity = '0';
     line2El.style.opacity = '0';
-    line1El.style.transform = 'scale(1.04) translateY(-8px)';
-    line2El.style.transform = 'scale(1.04) translateY(-8px)';
+    line1El.style.transform = 'scale(1.08) translateY(-18px)';
+    line2El.style.transform = 'scale(1.08) translateY(-18px)';
+    line1El.style.filter = 'blur(8px)';
+    line2El.style.filter = 'blur(8px)';
 
     setTimeout(function () {
       applyTagline(currentIndex);
 
-      /* Reset to below position */
+      /* Reset to entry position — no transition */
       line1El.style.transition = 'none';
       line2El.style.transition = 'none';
-      line1El.style.transform = 'scale(0.97) translateY(8px)';
-      line2El.style.transform = 'scale(0.97) translateY(8px)';
+      line1El.style.transform = 'scale(0.92) translateY(24px)';
+      line2El.style.transform = 'scale(0.92) translateY(24px)';
+      line1El.style.filter = 'blur(8px)';
+      line2El.style.filter = 'blur(8px)';
+      line1El.style.opacity = '0';
+      line2El.style.opacity = '0';
 
       /* Force reflow then animate in */
       void line1El.offsetWidth;
-      var tIn = 'opacity 0.8s ease, transform 0.8s ease';
+      var tIn = 'opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1), filter 0.8s ease';
       line1El.style.transition = tIn;
       line2El.style.transition = tIn;
       line1El.style.opacity = '1';
       line2El.style.opacity = '1';
       line1El.style.transform = 'scale(1) translateY(0)';
       line2El.style.transform = 'scale(1) translateY(0)';
-    }, 800);
+      line1El.style.filter = 'blur(0px)';
+      line2El.style.filter = 'blur(0px)';
+    }, 700);
   }, 30000);
 
 }());

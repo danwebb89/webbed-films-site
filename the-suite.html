@@ -105,8 +105,7 @@
     .contact-frame:hover {
       transform: rotate(0deg) scale(1.32) translateY(-20px) !important;
       box-shadow: 0 40px 100px rgba(0,0,0,0.97), 0 0 0 2px rgba(200,169,110,0.22);
-      z-index: 20;
-      position: absolute;
+      z-index: 100 !important;
     }
 
     .contact-frame span {
@@ -323,8 +322,6 @@
       opacity: 1;
       transform: translateY(0);
     }
-    /* Stagger contact frames */
-    .contact-frame.reveal { transition-delay: calc(var(--reveal-i, 0) * 0.08s); }
 
     /* ── Keyboard hint ── */
     .lb-hint {
@@ -641,20 +638,29 @@
       quoteEl.style.animation = 'suite-quote-breathe 30s ease-in-out infinite alternate';
     }, 1600);
 
-    /* Auto-rotate quote every 30s with smooth transition */
+    /* Auto-rotate quote every 30s with dynamic transition */
     setInterval(function () {
-      quoteEl.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+      var t = 'opacity 0.7s ease, transform 0.7s ease, filter 0.7s ease';
+      quoteEl.style.transition = t;
       quoteEl.style.opacity = '0';
-      quoteEl.style.transform = 'scale(1.04) translateY(-8px)';
+      quoteEl.style.transform = 'scale(1.08) translateY(-18px)';
+      quoteEl.style.filter = 'blur(8px)';
       setTimeout(function () {
         quoteIdx = (quoteIdx + 1) % quotes.length;
         quoteEl.textContent = quotes[quoteIdx];
-        quoteEl.style.transform = 'scale(0.97) translateY(8px)';
-        /* Force reflow so the reset position takes before animating in */
+        /* Reset to entry position — no transition */
+        quoteEl.style.transition = 'none';
+        quoteEl.style.transform = 'scale(0.92) translateY(24px)';
+        quoteEl.style.filter = 'blur(8px)';
+        quoteEl.style.opacity = '0';
         void quoteEl.offsetWidth;
+        /* Animate in */
+        var tIn = 'opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1), filter 0.8s ease';
+        quoteEl.style.transition = tIn;
         quoteEl.style.opacity = '1';
         quoteEl.style.transform = 'scale(1) translateY(0)';
-      }, 800);
+        quoteEl.style.filter = 'blur(0px)';
+      }, 700);
     }, 30000);
 
     /* Random number helper */
@@ -1226,17 +1232,12 @@
     }
     window.addEventListener('scroll', onParallaxScroll, { passive: true });
 
-    /* ── Entrance animations (IntersectionObserver) ── */
-    parallaxFrames.forEach(function (f, i) {
-      f.classList.add('reveal');
-      f.style.setProperty('--reveal-i', i);
-    });
+    /* ── Entrance animations (IntersectionObserver) — spec rows only ── */
     document.querySelectorAll('.spec-row').forEach(function (r) {
       r.classList.add('reveal');
     });
 
     if ('IntersectionObserver' in window) {
-      /* Observe spec rows individually */
       var rowObs = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
@@ -1248,31 +1249,6 @@
       document.querySelectorAll('.spec-row.reveal').forEach(function (el) {
         rowObs.observe(el);
       });
-
-      /* Observe the contact sheet section — reveal all frames when it enters */
-      var framesRevealed = false;
-      function revealFrames() {
-        if (framesRevealed) return;
-        framesRevealed = true;
-        parallaxFrames.forEach(function (f) { f.classList.add('is-visible'); });
-      }
-      var sheetObs = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            revealFrames();
-            sheetObs.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0 });
-      sheetObs.observe(sheet);
-      /* Fallback: also check on scroll in case observer missed initial state */
-      window.addEventListener('scroll', function checkSheet() {
-        var r = sheet.getBoundingClientRect();
-        if (r.top < window.innerHeight && r.bottom > 0) {
-          revealFrames();
-          window.removeEventListener('scroll', checkSheet);
-        }
-      }, { passive: true });
     } else {
       document.querySelectorAll('.reveal').forEach(function (el) {
         el.classList.add('is-visible');
