@@ -17,23 +17,22 @@ echo "=== Webbed Films Deploy ==="
 
 # Step 1: Git commit and push
 echo ""
-echo "[1/3] Committing and pushing to GitHub..."
+echo "[1/5] Committing and pushing to GitHub..."
 git add -A
 git commit -m "Deploy: ${TIMESTAMP}" || echo "Nothing to commit."
 git push
 
 # Step 2: Pull latest code on Unraid
 echo ""
-echo "[2/4] Pulling latest code on Unraid..."
+echo "[2/5] Pulling latest code on Unraid..."
 ssh -i "${SSH_KEY}" "${UNRAID_USER}@${UNRAID_IP}" \
   "cd /mnt/user/appdata/webbed-films-site && git fetch origin && git reset --hard origin/main"
 
-# Step 3: Rsync assets to Unraid (force 644 files / 755 dirs so nginx can read them)
+# Step 3: Rsync assets to Unraid
 echo ""
-echo "[3/4] Syncing assets to Unraid (${UNRAID_IP})..."
+echo "[3/5] Syncing assets to Unraid (${UNRAID_IP})..."
 rsync \
   --archive \
-  --chmod=D755,F644 \
   --verbose \
   --progress \
   --exclude='*.DS_Store' \
@@ -41,9 +40,15 @@ rsync \
   assets/ \
   "${UNRAID_USER}@${UNRAID_IP}:${UNRAID_PATH}"
 
-# Step 4: Purge Cloudflare cache
+# Step 4: Fix permissions so nginx can read all assets
 echo ""
-echo "[4/4] Purging Cloudflare cache for webbedfilms.com..."
+echo "[4/5] Fixing file permissions on Unraid..."
+ssh -i "${SSH_KEY}" "${UNRAID_USER}@${UNRAID_IP}" \
+  "find ${UNRAID_PATH} -type f -exec chmod 644 {} + && find ${UNRAID_PATH} -type d -exec chmod 755 {} +"
+
+# Step 5: Purge Cloudflare cache
+echo ""
+echo "[5/5] Purging Cloudflare cache for webbedfilms.com..."
 if [ -z "${CF_API_TOKEN}" ]; then
   echo "WARNING: CF_API_TOKEN not set — skipping cache purge."
 else
