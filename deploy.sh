@@ -22,11 +22,18 @@ git add -A
 git commit -m "Deploy: ${TIMESTAMP}" || echo "Nothing to commit."
 git push
 
-# Step 2: Rsync assets to Unraid
+# Step 2: Pull latest code on Unraid
 echo ""
-echo "[2/3] Syncing assets to Unraid (${UNRAID_IP})..."
+echo "[2/4] Pulling latest code on Unraid..."
+ssh -i "${SSH_KEY}" "${UNRAID_USER}@${UNRAID_IP}" \
+  "cd /mnt/user/appdata/webbed-films-site && git fetch origin && git reset --hard origin/main"
+
+# Step 3: Rsync assets to Unraid (force 644 files / 755 dirs so nginx can read them)
+echo ""
+echo "[3/4] Syncing assets to Unraid (${UNRAID_IP})..."
 rsync \
   --archive \
+  --chmod=D755,F644 \
   --verbose \
   --progress \
   --exclude='*.DS_Store' \
@@ -34,9 +41,9 @@ rsync \
   assets/ \
   "${UNRAID_USER}@${UNRAID_IP}:${UNRAID_PATH}"
 
-# Step 3: Purge Cloudflare cache
+# Step 4: Purge Cloudflare cache
 echo ""
-echo "[3/3] Purging Cloudflare cache for webbedfilms.com..."
+echo "[4/4] Purging Cloudflare cache for webbedfilms.com..."
 if [ -z "${CF_API_TOKEN}" ]; then
   echo "WARNING: CF_API_TOKEN not set — skipping cache purge."
 else
