@@ -86,7 +86,7 @@
       position: relative;
       width: 100%;
       min-height: 1480px;
-      overflow: hidden;
+      overflow: visible;
     }
 
     .contact-frame {
@@ -662,55 +662,61 @@
       var count = allFrames.length;
       if (!count) return;
 
-      /* Shuffle frame order so z-stacking varies */
-      var indices = [];
-      for (var i = 0; i < count; i++) indices.push(i);
-      for (var i = indices.length - 1; i > 0; i--) {
+      /* Shuffle which photo goes where */
+      var order = [];
+      for (var i = 0; i < count; i++) order.push(i);
+      for (var i = order.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
-        var tmp = indices[i]; indices[i] = indices[j]; indices[j] = tmp;
+        var tmp = order[i]; order[i] = order[j]; order[j] = tmp;
       }
 
-      /* Dense scattered pile: 5 columns, tight rows, heavy overlap */
-      var cols = 5;
-      var rows = Math.ceil(count / cols);
-      var cellW = 100 / cols;           /* ~20% per column */
-      var rowH  = 240;                  /* tight row height encourages overlap */
-      var containerH = rows * rowH + 120;
+      /*
+       * Pre-defined slot centres (% x, px y) — hand-placed to fill the
+       * space edge-to-edge with no big holes.  15 slots for 15 frames.
+       * Each row is staggered so the eye never sees a grid.
+       */
+      var slots = [
+        /* Row 1: 4 across */
+        { x:  5, y:  20 },
+        { x: 28, y:  50 },
+        { x: 52, y:  10 },
+        { x: 76, y:  45 },
+        /* Row 2: 4 across, offset */
+        { x: 14, y: 320 },
+        { x: 40, y: 290 },
+        { x: 62, y: 340 },
+        { x: 84, y: 300 },
+        /* Row 3: 4 across */
+        { x:  3, y: 590 },
+        { x: 30, y: 560 },
+        { x: 54, y: 610 },
+        { x: 78, y: 570 },
+        /* Row 4: 3 across, centred */
+        { x: 16, y: 850 },
+        { x: 44, y: 880 },
+        { x: 72, y: 840 }
+      ];
 
+      /* Container height to fit all rows */
       var sheet = document.querySelector('.suite-contact-sheet');
-      if (sheet) sheet.style.minHeight = containerH + 'px';
+      if (sheet) sheet.style.minHeight = '1180px';
 
       for (var n = 0; n < count; n++) {
-        var fi = indices[n];
-        var f  = allFrames[fi];
+        var f = allFrames[order[n]];
+        var s = slots[n];
 
-        var col = n % cols;
-        var row = Math.floor(n / cols);
+        /* Random size — mostly generous so frames overlap */
+        var w = Math.round(rand(260, 460));
+        var h = Math.round(rand(220, 380));
 
-        /* Sizes: biased toward medium-large so frames overlap */
-        var sizeRoll = Math.random();
-        var w, h;
-        if (sizeRoll < 0.2) {
-          w = Math.round(rand(220, 300)); h = Math.round(rand(180, 250));
-        } else if (sizeRoll < 0.65) {
-          w = Math.round(rand(300, 420)); h = Math.round(rand(240, 340));
-        } else {
-          w = Math.round(rand(420, 520)); h = Math.round(rand(320, 420));
-        }
+        /* Jitter position away from the slot centre */
+        var lft = s.x + rand(-6, 6);
+        var top = s.y + rand(-30, 30);
 
-        /* Position: heavy jitter so frames bleed into neighbouring cells */
-        var cellCenterX = col * cellW + cellW / 2;
-        var jitterX = rand(-cellW * 0.5, cellW * 0.5);
-        var lft = Math.max(-2, Math.min(78, cellCenterX + jitterX));
-
-        var cellCenterY = row * rowH + rowH * 0.4;
-        var jitterY = rand(-rowH * 0.45, rowH * 0.45);
-        var top = Math.max(-20, cellCenterY + jitterY);
-
-        /* Rotation */
+        /* Rotation: usually subtle, occasionally big */
         var rot = Math.random() < 0.15
-          ? rand(-14, 14)
-          : rand(-7, 7);
+          ? rand(-13, 13)
+          : rand(-6, 6);
 
         f.style.width     = w + 'px';
         f.style.height    = h + 'px';
