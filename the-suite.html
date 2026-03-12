@@ -15,7 +15,8 @@
   <!-- Rock Salt loaded via style.css -->
   <style>
 
-    html { background: #000; }
+    html { background: #000; overflow-x: hidden; }
+    body  { overflow-x: hidden; }
 
     /* ── Background ── */
     .suite-bg-video {
@@ -87,7 +88,7 @@
       position: relative;
       width: 100%;
       min-height: 900px;
-      overflow: hidden;
+      overflow: visible;
     }
 
     .contact-frame {
@@ -697,10 +698,11 @@
         var w = Math.round(rand(280, 460));
         var h = Math.round(rand(230, 380));
 
-        /* Position in px — keep every frame fully inside the container */
+        /* Position in px — keep every frame visible with rotation margin */
+        var margin = 60;  /* extra buffer for rotated corners */
         var baseX = col * colW + (colW - w) / 2;
         var lft = baseX + rand(-40, 40);
-        lft = Math.max(0, Math.min(sheetW - w, lft));
+        lft = Math.max(margin, Math.min(sheetW - w - margin, lft));
 
         var baseY = row * rowH;
         var top = baseY + rand(-20, 50);
