@@ -670,55 +670,54 @@
         var tmp = indices[i]; indices[i] = indices[j]; indices[j] = tmp;
       }
 
-      /* Build a grid of cells, then jitter each frame within its cell */
-      var cols = 4;
+      /* Dense scattered pile: 5 columns, tight rows, heavy overlap */
+      var cols = 5;
       var rows = Math.ceil(count / cols);
-      var cellW = 100 / cols;           /* percentage width per cell */
-      var rowH  = 360;                  /* px height per row */
-      var containerH = rows * rowH + 60;
+      var cellW = 100 / cols;           /* ~20% per column */
+      var rowH  = 240;                  /* tight row height encourages overlap */
+      var containerH = rows * rowH + 120;
 
-      /* Update container min-height */
       var sheet = document.querySelector('.suite-contact-sheet');
       if (sheet) sheet.style.minHeight = containerH + 'px';
 
       for (var n = 0; n < count; n++) {
-        var fi = indices[n];           /* shuffled index → which frame */
+        var fi = indices[n];
         var f  = allFrames[fi];
 
         var col = n % cols;
         var row = Math.floor(n / cols);
 
-        /* Randomise size: mix of small, medium, large */
+        /* Sizes: biased toward medium-large so frames overlap */
         var sizeRoll = Math.random();
         var w, h;
-        if (sizeRoll < 0.25) {
-          w = Math.round(rand(200, 280)); h = Math.round(rand(180, 240));
-        } else if (sizeRoll < 0.7) {
-          w = Math.round(rand(280, 400)); h = Math.round(rand(230, 340));
+        if (sizeRoll < 0.2) {
+          w = Math.round(rand(220, 300)); h = Math.round(rand(180, 250));
+        } else if (sizeRoll < 0.65) {
+          w = Math.round(rand(300, 420)); h = Math.round(rand(240, 340));
         } else {
-          w = Math.round(rand(400, 500)); h = Math.round(rand(300, 420));
+          w = Math.round(rand(420, 520)); h = Math.round(rand(320, 420));
         }
 
-        /* Position: center of cell + jitter */
+        /* Position: heavy jitter so frames bleed into neighbouring cells */
         var cellCenterX = col * cellW + cellW / 2;
-        var jitterX = rand(-cellW * 0.3, cellW * 0.3);
-        var lft = Math.max(0.5, Math.min(76, cellCenterX + jitterX));
+        var jitterX = rand(-cellW * 0.5, cellW * 0.5);
+        var lft = Math.max(-2, Math.min(78, cellCenterX + jitterX));
 
-        var cellCenterY = row * rowH + rowH / 2;
-        var jitterY = rand(-rowH * 0.3, rowH * 0.3);
-        var top = Math.max(5, cellCenterY + jitterY);
+        var cellCenterY = row * rowH + rowH * 0.4;
+        var jitterY = rand(-rowH * 0.45, rowH * 0.45);
+        var top = Math.max(-20, cellCenterY + jitterY);
 
-        /* Rotation: mostly subtle, occasionally dramatic */
+        /* Rotation */
         var rot = Math.random() < 0.15
           ? rand(-14, 14)
-          : rand(-6, 6);
+          : rand(-7, 7);
 
         f.style.width     = w + 'px';
         f.style.height    = h + 'px';
         f.style.top       = Math.round(top) + 'px';
         f.style.left      = lft.toFixed(1) + '%';
         f.style.transform = 'rotate(' + rot.toFixed(1) + 'deg)';
-        f.style.zIndex    = Math.floor(rand(1, 10));
+        f.style.zIndex    = Math.floor(rand(1, 15));
       }
     }());
 
