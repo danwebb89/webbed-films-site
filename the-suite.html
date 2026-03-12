@@ -659,29 +659,67 @@
     /* ── Randomise frame layout on each page load ── */
     (function () {
       var allFrames = document.querySelectorAll('.contact-frame');
-      var rows = [
-        { tMin:  10, tMax:  70, slots: [[ 1,5],  [22,28], [45,53], [69,76]] },
-        { tMin: 390, tMax: 450, slots: [[ 0,4],  [22,28], [49,56], [70,76]] },
-        { tMin: 740, tMax: 800, slots: [[ 1,5],  [24,30], [48,55], [72,77]] },
-        { tMin:1090, tMax:1140, slots: [[ 6,12], [32,40], [60,68]]          }
-      ];
-      var idx = 0;
-      rows.forEach(function (row) {
-        row.slots.forEach(function (slot) {
-          if (idx >= allFrames.length) return;
-          var f   = allFrames[idx++];
-          var w   = Math.round(rand(230, 460));
-          var h   = Math.round(rand(210, 400));
-          var rot = rand(-6.5, 6.5).toFixed(1);
-          var top = Math.round(rand(row.tMin, row.tMax));
-          var lft = rand(slot[0], slot[1]).toFixed(1);
-          f.style.width     = w   + 'px';
-          f.style.height    = h   + 'px';
-          f.style.top       = top + 'px';
-          f.style.left      = lft + '%';
-          f.style.transform = 'rotate(' + rot + 'deg)';
-        });
-      });
+      var count = allFrames.length;
+      if (!count) return;
+
+      /* Shuffle frame order so z-stacking varies */
+      var indices = [];
+      for (var i = 0; i < count; i++) indices.push(i);
+      for (var i = indices.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = indices[i]; indices[i] = indices[j]; indices[j] = tmp;
+      }
+
+      /* Build a grid of cells, then jitter each frame within its cell */
+      var cols = 4;
+      var rows = Math.ceil(count / cols);
+      var cellW = 100 / cols;           /* percentage width per cell */
+      var rowH  = 360;                  /* px height per row */
+      var containerH = rows * rowH + 60;
+
+      /* Update container min-height */
+      var sheet = document.querySelector('.suite-contact-sheet');
+      if (sheet) sheet.style.minHeight = containerH + 'px';
+
+      for (var n = 0; n < count; n++) {
+        var fi = indices[n];           /* shuffled index → which frame */
+        var f  = allFrames[fi];
+
+        var col = n % cols;
+        var row = Math.floor(n / cols);
+
+        /* Randomise size: mix of small, medium, large */
+        var sizeRoll = Math.random();
+        var w, h;
+        if (sizeRoll < 0.25) {
+          w = Math.round(rand(200, 280)); h = Math.round(rand(180, 240));
+        } else if (sizeRoll < 0.7) {
+          w = Math.round(rand(280, 400)); h = Math.round(rand(230, 340));
+        } else {
+          w = Math.round(rand(400, 500)); h = Math.round(rand(300, 420));
+        }
+
+        /* Position: center of cell + jitter */
+        var cellCenterX = col * cellW + cellW / 2;
+        var jitterX = rand(-cellW * 0.3, cellW * 0.3);
+        var lft = Math.max(0.5, Math.min(76, cellCenterX + jitterX));
+
+        var cellCenterY = row * rowH + rowH / 2;
+        var jitterY = rand(-rowH * 0.3, rowH * 0.3);
+        var top = Math.max(5, cellCenterY + jitterY);
+
+        /* Rotation: mostly subtle, occasionally dramatic */
+        var rot = Math.random() < 0.15
+          ? rand(-14, 14)
+          : rand(-6, 6);
+
+        f.style.width     = w + 'px';
+        f.style.height    = h + 'px';
+        f.style.top       = Math.round(top) + 'px';
+        f.style.left      = lft.toFixed(1) + '%';
+        f.style.transform = 'rotate(' + rot.toFixed(1) + 'deg)';
+        f.style.zIndex    = Math.floor(rand(1, 10));
+      }
     }());
 
     /* ── Build spec rows ── */
