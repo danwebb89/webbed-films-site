@@ -94,23 +94,46 @@
   /* ── Set first tagline immediately ── */
   applyTagline(currentIndex);
 
+  /* Start slow zoom once entrance animation finishes */
+  var heroH1 = line1El.parentElement;
+  setTimeout(function () {
+    if (heroH1) {
+      heroH1.style.animation = 'c-hero-breathe 30s ease-in-out infinite alternate';
+    }
+  }, 1500);
+
   /* ── Crossfade to a random tagline every 30s ── */
   setInterval(function () {
     currentIndex = randomIndex(currentIndex);
 
-    /* Fade out */
-    line1El.style.transition = 'opacity 0.5s ease';
-    line2El.style.transition = 'opacity 0.5s ease';
+    /* Fade out + drift up */
+    var t = 'opacity 0.8s ease, transform 0.8s ease';
+    line1El.style.transition = t;
+    line2El.style.transition = t;
     line1El.style.opacity = '0';
     line2El.style.opacity = '0';
+    line1El.style.transform = 'scale(1.04) translateY(-8px)';
+    line2El.style.transform = 'scale(1.04) translateY(-8px)';
 
     setTimeout(function () {
       applyTagline(currentIndex);
 
-      /* Fade in */
+      /* Reset to below position */
+      line1El.style.transition = 'none';
+      line2El.style.transition = 'none';
+      line1El.style.transform = 'scale(0.97) translateY(8px)';
+      line2El.style.transform = 'scale(0.97) translateY(8px)';
+
+      /* Force reflow then animate in */
+      void line1El.offsetWidth;
+      var tIn = 'opacity 0.8s ease, transform 0.8s ease';
+      line1El.style.transition = tIn;
+      line2El.style.transition = tIn;
       line1El.style.opacity = '1';
       line2El.style.opacity = '1';
-    }, 500);
+      line1El.style.transform = 'scale(1) translateY(0)';
+      line2El.style.transform = 'scale(1) translateY(0)';
+    }, 800);
   }, 30000);
 
 }());

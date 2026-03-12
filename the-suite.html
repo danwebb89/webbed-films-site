@@ -66,7 +66,17 @@
       line-height: 1.0;
       max-width: 900px;
       opacity: 0;
-      animation: suite-fade-up 0.9s ease forwards 0.4s;
+      transform: scale(0.97) translateY(12px);
+      animation: suite-quote-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.4s;
+    }
+
+    @keyframes suite-quote-in {
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @keyframes suite-quote-breathe {
+      from { transform: scale(1); }
+      to   { transform: scale(1.03); }
     }
 
     /* ══════════════════════════════════════════
@@ -622,15 +632,25 @@
     var quoteIdx = Math.floor(Math.random() * quotes.length);
     quoteEl.textContent = quotes[quoteIdx];
 
-    /* Auto-rotate quote every 30s with crossfade */
+    /* Start slow zoom once entrance animation finishes */
+    setTimeout(function () {
+      quoteEl.style.animation = 'suite-quote-breathe 30s ease-in-out infinite alternate';
+    }, 1600);
+
+    /* Auto-rotate quote every 30s with smooth transition */
     setInterval(function () {
-      quoteEl.style.transition = 'opacity 0.6s ease';
+      quoteEl.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
       quoteEl.style.opacity = '0';
+      quoteEl.style.transform = 'scale(1.04) translateY(-8px)';
       setTimeout(function () {
         quoteIdx = (quoteIdx + 1) % quotes.length;
         quoteEl.textContent = quotes[quoteIdx];
+        quoteEl.style.transform = 'scale(0.97) translateY(8px)';
+        /* Force reflow so the reset position takes before animating in */
+        void quoteEl.offsetWidth;
         quoteEl.style.opacity = '1';
-      }, 600);
+        quoteEl.style.transform = 'scale(1) translateY(0)';
+      }, 800);
     }, 30000);
 
     /* Random number helper */
