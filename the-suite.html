@@ -85,7 +85,7 @@
     .suite-contact-sheet {
       position: relative;
       width: 100%;
-      min-height: 1480px;
+      min-height: 900px;
       overflow: visible;
     }
 
@@ -634,6 +634,8 @@
 
     /* Start slow zoom once entrance animation finishes */
     setTimeout(function () {
+      quoteEl.style.opacity = '1';
+      quoteEl.style.transform = 'scale(1) translateY(0)';
       quoteEl.style.animation = 'suite-quote-breathe 30s ease-in-out infinite alternate';
     }, 1600);
 
@@ -676,30 +678,30 @@
        * Each row is staggered so the eye never sees a grid.
        */
       var slots = [
-        /* Row 1: 4 across */
-        { x:  5, y:  20 },
-        { x: 28, y:  50 },
-        { x: 52, y:  10 },
-        { x: 76, y:  45 },
-        /* Row 2: 4 across, offset */
-        { x: 14, y: 320 },
-        { x: 40, y: 290 },
-        { x: 62, y: 340 },
-        { x: 84, y: 300 },
-        /* Row 3: 4 across */
-        { x:  3, y: 590 },
-        { x: 30, y: 560 },
-        { x: 54, y: 610 },
-        { x: 78, y: 570 },
-        /* Row 4: 3 across, centred */
-        { x: 16, y: 850 },
-        { x: 44, y: 880 },
-        { x: 72, y: 840 }
+        /* Row 1: 4 across — tighter, more central */
+        { x:  8, y:  10 },
+        { x: 28, y:  30 },
+        { x: 50, y:   0 },
+        { x: 72, y:  25 },
+        /* Row 2: 4 across, overlapping row 1 */
+        { x: 16, y: 210 },
+        { x: 38, y: 190 },
+        { x: 58, y: 220 },
+        { x: 78, y: 195 },
+        /* Row 3: 4 across, overlapping row 2 */
+        { x:  6, y: 400 },
+        { x: 30, y: 380 },
+        { x: 52, y: 410 },
+        { x: 74, y: 385 },
+        /* Row 4: 3 across, centred, overlapping row 3 */
+        { x: 18, y: 580 },
+        { x: 44, y: 600 },
+        { x: 68, y: 570 }
       ];
 
       /* Container height to fit all rows */
       var sheet = document.querySelector('.suite-contact-sheet');
-      if (sheet) sheet.style.minHeight = '1180px';
+      if (sheet) sheet.style.minHeight = '900px';
 
       for (var n = 0; n < count; n++) {
         var f = allFrames[order[n]];
