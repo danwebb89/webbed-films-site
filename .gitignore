@@ -21,6 +21,13 @@ assets/photos/
 # Claude Code config
 .claude/
 
+# Secrets and credentials
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+
 # System files
 .DS_Store
 Thumbs.db
