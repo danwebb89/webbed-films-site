@@ -840,12 +840,17 @@
     /* ── Image loader with fallback chain ── */
     function loadImage (title, onSuccess, onFail) {
       var i = 0;
+      var paths = ['assets/images/800w/', 'assets/images/'];
+      var p = 0;
       function tryNext () {
-        if (i >= IMG_EXTS.length) { if (onFail) onFail(); return; }
+        if (i >= IMG_EXTS.length) {
+          i = 0; p++;
+          if (p >= paths.length) { if (onFail) onFail(); return; }
+        }
         var img = new Image();
         img.onload = function () { onSuccess(img.src); };
         img.onerror = function () { i++; tryNext(); };
-        img.src = 'assets/images/' + title + '.' + IMG_EXTS[i];
+        img.src = paths[p] + title + '.' + IMG_EXTS[i];
       }
       tryNext();
     }
