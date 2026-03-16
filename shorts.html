@@ -114,6 +114,7 @@
 
       <div id="monitor-hover" aria-hidden="true">
         <div class="hover-title" id="hover-title"></div>
+        <div class="hover-subtitle" id="hover-subtitle"></div>
       </div>
 
     </div>
@@ -246,6 +247,9 @@
 
         block.addEventListener('mouseenter', function () { hoverClip(clip, block, color); });
         block.addEventListener('mouseleave', function () { clearHover(block); });
+        block.addEventListener('click', function () {
+          if (clip.link) window.open(clip.link, '_blank', 'noopener,noreferrer');
+        });
         lane.appendChild(block);
         clipData.push({ clip: clip, el: block, color: color });
       });
@@ -263,6 +267,9 @@
         pill.textContent       = clip.title;
         pill.addEventListener('mouseenter', function () { hoverClip(clip, pill, color); });
         pill.addEventListener('mouseleave', function () { clearHover(pill); });
+        pill.addEventListener('click', function () {
+          if (clip.link) window.open(clip.link, '_blank', 'noopener,noreferrer');
+        });
         pillWrap.appendChild(pill);
       });
       mobileList.appendChild(pillWrap);
@@ -298,6 +305,8 @@
       isHovering = true;
       var t = document.getElementById('hover-title');
       if (t) t.textContent = clip.title;
+      var sub = document.getElementById('hover-subtitle');
+      if (sub) sub.textContent = clip.link ? 'WATCH \u25B6' : 'AVAILABLE ON REQUEST';
       var h = document.getElementById('monitor-hover');
       if (h) h.style.opacity = '1';
       if (el) el.classList.add('active');
@@ -373,6 +382,8 @@
       if (hover) hover.style.opacity = '1';
       var ht = document.getElementById('hover-title');
       if (ht) ht.textContent = d.clip.title;
+      var sub = document.getElementById('hover-subtitle');
+      if (sub) sub.textContent = d.clip.link ? 'WATCH \u25B6' : 'AVAILABLE ON REQUEST';
     }
 
     function getClipAtPlayhead () {
