@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Sitemap: https://www.webbedfilms.com/sitemap.xml
+
+Disallow: /_review/
+Disallow: /deploy.sh

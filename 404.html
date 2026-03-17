@@ -5,32 +5,13 @@
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
   <link rel="apple-touch-icon" href="assets/images/favicon.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Webbed Films</title>
-  <meta name="description" content="Webbed Films — the editorial, short film, and branded content work of Daniel Webb. Editor, writer, and director based in Kent, UK.">
-  <meta property="og:title" content="Webbed Films">
-  <meta property="og:description" content="Editor · Writer · Director — the work of Daniel Webb.">
-  <meta property="og:image" content="https://www.webbedfilms.com/assets/images/logo.png">
-  <meta property="og:url" content="https://www.webbedfilms.com/">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Webbed Films">
-  <link rel="canonical" href="https://www.webbedfilms.com/">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:site" content="@webbedfilms_uk">
-  <meta name="twitter:title" content="Webbed Films">
-  <meta name="twitter:description" content="Editor · Writer · Director — the work of Daniel Webb.">
-  <meta name="twitter:image" content="https://www.webbedfilms.com/assets/images/logo.png">
+  <title>404 — Webbed Films</title>
+  <meta name="description" content="Page not found — Webbed Films">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&family=Permanent+Marker&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    :root {
-      --zoom-dur:   1.2s;
-      --blink-dur:  1.5s;
-      --scanline-alpha: 0.07;
-      --vignette-str:   0.60;
-    }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
@@ -39,151 +20,57 @@
       overflow-x: hidden;
     }
 
-    /* ── Video sits inside a plain div — we zoom the div, never the video ── */
-    #bg-wrapper {
-      position: fixed;
-      inset: 0;
-      /* Always on its own compositing layer from the start */
-      transform: translate3d(0, 0, 0);
-      will-change: transform;
-    }
-
-    #bg-video {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      /* No transform on the video itself — ever */
-    }
-
-    /* ── Scanlines ── */
-    .scanlines {
-      position: fixed; inset: 0;
-      background: repeating-linear-gradient(
-        to bottom,
-        transparent 0px, transparent 2px,
-        rgba(0,0,0,var(--scanline-alpha)) 2px,
-        rgba(0,0,0,var(--scanline-alpha)) 4px
-      );
-      pointer-events: none;
-      z-index: 10;
-    }
-
-    /* ── Vignette ── */
-    .vignette {
-      position: fixed; inset: 0;
-      background: radial-gradient(
-        ellipse 80% 80% at 50% 50%,
-        transparent 42%,
-        rgba(0,0,0,var(--vignette-str)) 100%
-      );
-      pointer-events: none;
-      z-index: 11;
-    }
-
-    /* ── Play button ── */
-    #play-btn {
-      position: fixed;
-      z-index: 20;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 3px solid rgba(255, 255, 255, 0.55);
-      background: rgba(0, 0, 0, 0.20);
-      color: #fff;
-      font-size: 44px;
-      padding-left: 6px; /* optical centre for ▶ */
+    .error-content {
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      transition:
-        background   0.35s ease,
-        border-color 0.35s ease,
-        box-shadow   0.35s ease,
-        transform    0.35s ease,
-        opacity      0.3s  ease;
-      box-shadow:
-        0 0 32px 8px rgba(255,255,255,0.14),
-        inset 0 0 20px rgba(255,255,255,0.05);
-      text-shadow: 0 0 20px rgba(255,255,255,0.9);
+      min-height: 80vh;
+      text-align: center;
+      padding: 2rem;
     }
 
-    #play-btn:hover {
-      background: rgba(255,255,255,0.14);
-      border-color: rgba(255,255,255,0.90);
-      box-shadow:
-        0 0 60px 20px rgba(255,255,255,0.28),
-        inset 0 0 36px rgba(255,255,255,0.1);
-      transform: translate(-50%, -50%) scale(1.08);
-      text-shadow: 0 0 36px rgba(255,255,255,1);
+    .error-code {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(6rem, 15vw, 12rem);
+      font-weight: 300;
+      color: #c8a96e;
+      line-height: 1;
+      letter-spacing: 0.05em;
     }
 
-    @media (max-width: 768px) {
-      #play-btn {
-        width: 80px; height: 80px; font-size: 30px;
-        /* On mobile, JS positions via CRT rect but the video crops heavily.
-           Override to dead-centre of viewport as fallback. */
-        left: 50% !important;
-        top: 50% !important;
-        border-width: 2px;
-      }
+    .error-message {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 1rem;
     }
 
-    /* ── Reel overlay ── */
-    #reel-overlay {
-      position: fixed; inset: 0;
-      background: #000;
-      z-index: 500;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.45s ease;
+    .error-home {
+      display: inline-block;
+      margin-top: 2.5rem;
+      padding: 0.75rem 2.5rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #c8a96e;
+      border: 1px solid #c8a96e;
+      background: transparent;
+      text-decoration: none;
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
-    #reel-overlay.active { opacity: 1; pointer-events: all; }
-
-    #reel { width: 100%; height: 100%; object-fit: contain; }
-
-    /* ── Close button ── */
-    #close-btn {
-      position: absolute;
-      top: 24px; right: 28px;
-      width: 44px; height: 44px;
-      border: 1px solid rgba(255,255,255,0.25);
-      border-radius: 50%;
-      background: rgba(0,0,0,0.55);
-      color: rgba(255,255,255,0.78);
-      font-size: 17px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      opacity: 0;
-      transition: opacity 0.55s ease 0.5s, background 0.2s ease, border-color 0.2s ease;
-      z-index: 501;
+    .error-home:hover {
+      background: #c8a96e;
+      color: #000;
     }
-
-    #reel-overlay.active #close-btn { opacity: 1; }
-
-    #close-btn:hover {
-      background: rgba(255,255,255,0.12);
-      border-color: rgba(255,255,255,0.55);
-      color: #fff;
-    }
-
   </style>
 </head>
 <body>
-  <a href="#main-content" class="skip-to-content">Skip to content</a>
 
   <!-- Header -->
   <header id="site-header">
@@ -273,32 +160,12 @@
     </a>
   </aside>
 
-  <!-- Wrapper div is what gets zoomed — video itself never transforms -->
-  <div id="bg-wrapper">
-    <video id="bg-video" src="assets/video/homebackground.mp4" autoplay muted loop playsinline poster="assets/images/hero-poster.jpg" aria-hidden="true"></video>
-  </div>
-
-  <div class="scanlines"></div>
-  <div class="vignette"></div>
-
-  <main id="main-content">
-  <h1 class="visually-hidden">Webbed Films — Editor, Writer, Director</h1>
-
-  <button id="play-btn" title="Play reel" aria-label="Play showreel">&#9654;</button>
-
-  <div id="reel-overlay">
-    <video id="reel" src="assets/video/showreel.mp4" playsinline preload="none"></video>
-    <button id="close-btn" title="Close (Esc)" aria-label="Close showreel">&#x2715;</button>
-  </div>
-
-  <!-- Spacer so footer sits below the 100vh hero (fixed CRT elements stay on-screen) -->
-  <div class="hero-spacer"></div>
-
-  <div id="currently-editing" aria-hidden="true">
-    <span class="ce-dot">●</span>&thinsp;<span class="ce-label">// CURRENTLY IN POST</span>
-    <span class="ce-project">THE SIDECAR GUYS: RIDICULOUS RIDES</span>
-  </div>
-
+  <main>
+    <div class="error-content">
+      <div class="error-code">404</div>
+      <p class="error-message">This page doesn't exist.</p>
+      <a href="index.html" class="error-home">Back to Home</a>
+    </div>
   </main>
 
   <!-- Footer -->
@@ -336,124 +203,6 @@
   </footer>
 
   <script src="js/nav.js"></script>
-  <script src="js/flourishes.js"></script>
-  <script>
-    const VIDEO_W = 1920, VIDEO_H = 1080;
-
-    var SCREEN = { x1: 0.128, y1: 0.215, x2: 0.490, y2: 0.590 };
-
-    function getVideoLayout() {
-      const vw = window.innerWidth, vh = window.innerHeight;
-      const va = VIDEO_W / VIDEO_H, vpa = vw / vh;
-      if (vpa >= va) {
-        return { renderedW: vw, renderedH: vw / va, offsetX: 0, offsetY: (vh - vw / va) / 2 };
-      } else {
-        return { renderedW: vh * va, renderedH: vh, offsetX: (vw - vh * va) / 2, offsetY: 0 };
-      }
-    }
-
-    function getScreenRect() {
-      const { renderedW, renderedH, offsetX, offsetY } = getVideoLayout();
-      const left   = SCREEN.x1 * renderedW + offsetX;
-      const top    = SCREEN.y1 * renderedH + offsetY;
-      const right  = SCREEN.x2 * renderedW + offsetX;
-      const bottom = SCREEN.y2 * renderedH + offsetY;
-      return { left, top, right, bottom,
-               width: right - left, height: bottom - top,
-               centerX: (left + right) / 2, centerY: (top + bottom) / 2 };
-    }
-
-    const playBtn   = document.getElementById('play-btn');
-
-    /* Position play button at the CRT screen centre */
-    function positionPlayBtn() {
-      var r = getScreenRect();
-      playBtn.style.left = r.centerX + 'px';
-      playBtn.style.top  = r.centerY + 'px';
-    }
-    positionPlayBtn();
-    window.addEventListener('resize', positionPlayBtn);
-
-    /* ── Zoom targets the wrapper div, not the video element ── */
-    const bgWrapper   = document.getElementById('bg-wrapper');
-    const reelOverlay = document.getElementById('reel-overlay');
-    const reelVideo      = document.getElementById('reel');
-    const closeBtn       = document.getElementById('close-btn');
-
-    let state = 'idle';
-
-    function cssMs(v) {
-      const raw = getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-      return raw.endsWith('ms') ? parseFloat(raw) : parseFloat(raw) * 1000;
-    }
-
-    function zoomParams() {
-      const r  = getScreenRect();
-      const vw = window.innerWidth, vh = window.innerHeight;
-      const scale = Math.max(vw / r.width, vh / r.height) * 1.04;
-      return {
-        scale,
-        originX: r.centerX, originY: r.centerY,
-        tx: vw / 2 - r.centerX, ty: vh / 2 - r.centerY
-      };
-    }
-
-    /* ── OPEN ── */
-    playBtn.addEventListener('click', function() {
-      if (state !== 'idle') return;
-      state = 'opening';
-
-      const zoomMs = cssMs('--zoom-dur');
-
-      playBtn.style.opacity   = '0';
-
-      const { scale, originX, originY, tx, ty } = zoomParams();
-      bgWrapper.style.transformOrigin = originX + 'px ' + originY + 'px';
-      bgWrapper.style.transition = 'transform ' + zoomMs + 'ms cubic-bezier(0.76,0,0.24,1)';
-      bgWrapper.style.transform  = 'translate3d(' + tx + 'px,' + ty + 'px,0) scale(' + scale + ')';
-
-      setTimeout(function() {
-        reelOverlay.classList.add('active');
-        reelVideo.play().catch(function() {});
-        state = 'open';
-        if (reelOverlay.requestFullscreen) {
-          reelOverlay.requestFullscreen().catch(function() {});
-        }
-      }, zoomMs * 0.68);
-    });
-
-    /* ── CLOSE ── */
-    function closeReel() {
-      if (state !== 'open') return;
-      state = 'closing';
-
-      const zoomMs = cssMs('--zoom-dur');
-
-      if (document.fullscreenElement) document.exitFullscreen().catch(function() {});
-      reelVideo.pause();
-      reelOverlay.classList.remove('active');
-
-      setTimeout(function() {
-        bgWrapper.style.transition = 'transform ' + zoomMs + 'ms cubic-bezier(0.76,0,0.24,1)';
-        bgWrapper.style.transform  = 'translate3d(0,0,0)';
-
-        setTimeout(function() {
-          playBtn.style.opacity   = '';
-          reelVideo.currentTime = 0;
-          state = 'idle';
-        }, zoomMs);
-
-      }, 300);
-    }
-
-    closeBtn.addEventListener('click', function(e) { e.stopPropagation(); closeReel(); });
-    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeReel(); });
-    reelOverlay.addEventListener('click', function(e) { if (e.target === reelOverlay) closeReel(); });
-    reelVideo.addEventListener('ended', function() { closeReel(); });
-    document.addEventListener('fullscreenchange', function() {
-      if (!document.fullscreenElement && state === 'open') closeReel();
-    });
-  </script>
 
 </body>
 </html>
