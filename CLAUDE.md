@@ -22,7 +22,7 @@ Static portfolio website for Dan Webb / Webbed Films. Fully static HTML/CSS/JS â
 - **App lives at:** /mnt/user/appdata/webbed-films-site/
 - **Media lives at:** /mnt/user/appdata/webbed-films-site/assets/
 - **Container:** webbed-films-site (nginx:alpine, port 8082)
-- **Cloudflare tunnel:** webbed-films (ID: 061fbc19-449d-42e8-b827-b4cbdbdd953c)
+- **Cloudflare tunnel:** chatgpt-bridge (ID: 646cc955-badb-4972-9c7f-e067cf9e8614)
 - **Live URLs:** https://webbedfilms.com and https://www.webbedfilms.com
 - **GitHub repo:** https://github.com/danwebb89/webbed-films-site
 
