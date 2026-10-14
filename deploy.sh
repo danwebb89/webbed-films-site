@@ -106,15 +106,22 @@ rollback() {
   echo "After rollback: $LOCAL_CHECK -> $(http_code "$LOCAL_CHECK")"
 }
 trap 'echo "Deploy failed after the code changed."; rollback' ERR
+# Media this commit stops tracking: untrack it on the server first, so the
+# reset leaves the files (and their folders) in place instead of deleting them.
+untracked_media=$(git diff --name-only --no-renames --diff-filter=D "$old_rev" "$new_rev" -- assets/ | wc -l | tr -d ' ')
+if [ "$untracked_media" -gt 0 ]; then
+  git diff --name-only -z --no-renames --diff-filter=D "$old_rev" "$new_rev" -- assets/ \
+    | "${SSH[@]}" "cd '$SITE_DIR' && xargs -0 -r git rm -q --cached --"
+  echo "Kept $untracked_media media file(s) on the server that git no longer tracks."
+fi
 "${SSH[@]}" "cd '$SITE_DIR' && git fetch --quiet origin main && git reset --quiet --hard '$new_rev'"
 echo "Server checkout now at ${new_rev:0:8} (was ${old_rev:0:8})."
-# Top-up: if this commit stopped tracking a media file, the reset just deleted
-# it from the server, so put back anything in assets/ that is now missing.
+# Safety net: put back anything in assets/ that is missing on the server.
 topup_out=$("${RSYNC[@]}" --ignore-existing assets/ "$UNRAID:$SITE_DIR/assets/")
 restored=$(printf '%s\n' "$topup_out" | grep -c '^<f' || true)
 if [ "$restored" -gt 0 ]; then
-  "${SSH[@]}" "find '$SITE_DIR/assets' -type f ! -perm 644 -exec chmod 644 {} +"
-  echo "Restored $restored media file(s) that git removed."
+  "${SSH[@]}" "find '$SITE_DIR/assets' -type f ! -perm 644 -exec chmod 644 {} + ; find '$SITE_DIR/assets' -type d ! -perm 755 -exec chmod 755 {} +"
+  echo "Restored $restored missing media file(s)."
 fi
 
 say 6/6 "Health check and cache purge"

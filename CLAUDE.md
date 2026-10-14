@@ -13,7 +13,7 @@ The screening room `watch.webbedfilms.com` is a separate project (`~/Projects/we
 ## Media
 - Video, images and audio are gitignored. They live in `assets/` and reach the server by rsync, not git. Never commit new media.
 - Use lowercase file extensions (`.jpg`, not `.JPG`). nginx on Unraid is case-sensitive.
-- Since 14 Oct no media is tracked in git (the soundtrack mp3s and `logo.png` used to be). After the code moves, `deploy.sh` puts back any media file that git removed.
+- Since 14 Oct no media is tracked in git (the soundtrack mp3s and `logo.png` used to be). When a commit stops tracking a media file, `deploy.sh` untracks it on the server before moving the code, so the file stays live. A top-up sync also puts back any missing media and fixes permissions.
 
 ## Live runtime
 - **Unraid** `192.168.10.25` (SSH key `~/.ssh/id_ed25519_unraid`), container `Webbed-Films-Site` (`nginx:alpine`, port 8082).

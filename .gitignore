@@ -2,6 +2,9 @@
 *.mp3
 *.wav
 *.m4a
+*.aac
+*.ogg
+*.flac
 
 # Video files
 *.mp4
@@ -15,6 +18,8 @@
 *.gif
 *.webp
 *.svg
+*.avif
+*.ico
 
 # Asset directories (bulk media)
 assets/video/
