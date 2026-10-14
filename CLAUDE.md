@@ -29,7 +29,7 @@ Static portfolio website for Dan Webb / Webbed Films. Fully static HTML/CSS/JS â
 ## How to deploy changes
 Commit your changes on `main` first. The deploy never stages or commits anything, and untracked files are never deployed.
 1. `./deploy.sh --dry-run`: shows the code diff against the server and the media that would sync. It changes nothing.
-2. `./deploy.sh`: pushes `main`, moves the server checkout to it, rsyncs `assets/`, health-checks (rolls the code back if that fails), then purges only the changed URLs from Cloudflare.
+2. `./deploy.sh`: pushes `main`, syncs media first, then moves the code and checks the home page and every changed HTML page (rolls the code back if any fail), then purges only the changed URLs from Cloudflare.
 
 It prints a one-line rollback command at the end.
 
