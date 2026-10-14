@@ -33,7 +33,7 @@ export CF_ZONE_ID="8b36b64a00523c5759aab251d3746484"
 export CF_API_TOKEN="${CF_API_TOKEN:-}"
 
 SSH=(ssh -i "$SSH_KEY" -o ConnectTimeout=10 "$UNRAID")
-RSYNC=(rsync --archive --itemize-changes --8-bit-output --exclude='*.DS_Store' -e "ssh -i $SSH_KEY -o ConnectTimeout=10")
+RSYNC=(rsync --archive --chmod=D755,F644 --itemize-changes --8-bit-output --exclude='*.DS_Store' -e "ssh -i $SSH_KEY -o ConnectTimeout=10")
 
 say() { printf '\n[%s] %s\n' "$1" "$2"; }
 die() { echo "STOP: $*" >&2; exit 1; }
