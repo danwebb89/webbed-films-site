@@ -108,6 +108,14 @@ rollback() {
 trap 'echo "Deploy failed after the code changed."; rollback' ERR
 "${SSH[@]}" "cd '$SITE_DIR' && git fetch --quiet origin main && git reset --quiet --hard '$new_rev'"
 echo "Server checkout now at ${new_rev:0:8} (was ${old_rev:0:8})."
+# Top-up: if this commit stopped tracking a media file, the reset just deleted
+# it from the server, so put back anything in assets/ that is now missing.
+topup_out=$("${RSYNC[@]}" --ignore-existing assets/ "$UNRAID:$SITE_DIR/assets/")
+restored=$(printf '%s\n' "$topup_out" | grep -c '^<f' || true)
+if [ "$restored" -gt 0 ]; then
+  "${SSH[@]}" "find '$SITE_DIR/assets' -type f ! -perm 644 -exec chmod 644 {} +"
+  echo "Restored $restored media file(s) that git removed."
+fi
 
 say 6/6 "Health check and cache purge"
 # Check the home page plus every HTML page this deploy added or changed.

@@ -1,3 +1,8 @@
+# Media files (rsynced by deploy.sh, never in git)
+*.mp3
+*.wav
+*.m4a
+
 # Video files
 *.mp4
 *.mov
@@ -15,7 +20,6 @@
 assets/video/
 assets/videos/
 assets/images/*
-!assets/images/logo.png
 assets/photos/
 
 # Claude Code config
