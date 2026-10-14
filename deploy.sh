@@ -2,10 +2,11 @@
 # Deploy webbedfilms.com to Unraid (container Webbed-Films-Site, nginx on :8082).
 #
 # Deploys committed code only. It never stages or commits anything, so commit
-# your changes first. Untracked files are left alone and never deployed.
+# your changes first. Untracked code files are left alone and never deployed;
+# media in assets/ is rsynced whether tracked or not.
 #
 #   ./deploy.sh --dry-run   show what would change; touches nothing
-#   ./deploy.sh             push main, sync media, move the server checkout
+#   ./deploy.sh             sync media, push main, move the server checkout
 #                           to it, health-check (rolls the code back on
 #                           failure), purge the changed URLs from Cloudflare
 #
@@ -44,8 +45,8 @@ say 1/6 "Checking the local repo"
 branch=$(git branch --show-current)
 git diff --quiet && git diff --cached --quiet \
   || die "uncommitted changes to tracked files. Commit or stash them first."
-untracked=$(git ls-files --others --exclude-standard | wc -l | tr -d ' ')
-[ "$untracked" -gt 0 ] && echo "Note: $untracked untracked file(s) ignored (not deployed)."
+untracked=$(git ls-files --others --exclude-standard | grep -vc '^assets/' || true)
+[ "$untracked" -gt 0 ] && echo "Note: $untracked untracked file(s) outside assets/ are not deployed."
 git fetch --quiet origin main
 git merge-base --is-ancestor origin/main HEAD \
   || die "HEAD is behind or has diverged from origin/main. Pull first."
